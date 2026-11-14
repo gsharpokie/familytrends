@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Then and Now: The American Family</title>
+<meta name="description" content="How have American families changed in 50 years? See where things stood then, guess where they stand now, and check your guesses against federal and survey data.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://gsharpokie.github.io/familytrends/">
+<meta property="og:title" content="Then and Now: The American Family">
+<meta property="og:description" content="How have American families changed in 50 years? See where things stood then, guess where they stand now, and check your guesses against federal and survey data.">
+<meta property="og:image" content="https://gsharpokie.github.io/familytrends/preview.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Then and Now: The American Family. Paired bars comparing the 1970s with today on marriage age, living alone, and births to unmarried women.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:creator" content="@gsharpokie">
+<meta name="twitter:title" content="Then and Now: The American Family">
+<meta name="twitter:description" content="How have American families changed in 50 years? See where things stood then, guess where they stand now, and check your guesses against federal and survey data.">
+<meta name="twitter:image" content="https://gsharpokie.github.io/familytrends/preview.png">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231d3b3a'/%3E%3Cpath d='M7 16 L16 8 L25 16 V25 H7 Z' fill='none' stroke='%23f2b65a' stroke-width='2.6' stroke-linejoin='round'/%3E%3Crect x='13.5' y='18' width='5' height='7' fill='%23f2b65a'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@700;900&display=swap" rel="stylesheet">
+<style>
+/* Layout: one column. Nine questions; each shows where things stood "then," asks for a guess about "now,"
+   and reveals bars for then, now, and the guess. After the questions: a then-and-now table, the fuller picture,
+   discussion questions, and sources. */
+:root {
+  --paper: #f3f5f2; --surface: #ffffff; --ink: #1c2b2a; --muted: #5a6a68; --line: #d8dfdc;
+  --you: #c0581d; --then: #9fb5b1; --now: #1f6f69; --alt: #6b7fb8;
+  --focus: #c0581d;
+  --display: "Libre Franklin", "Segoe UI", system-ui, sans-serif;
+  --body: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #111a19; --surface: #182423; --ink: #e8efed; --muted: #a3b3b0; --line: #2f3f3d;
+    --you: #f0935a; --then: #50706b; --now: #5fc2b8; --alt: #9aa9e0; --focus: #f0935a; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #111a19; --surface: #182423; --ink: #e8efed; --muted: #a3b3b0; --line: #2f3f3d;
+  --you: #f0935a; --then: #50706b; --now: #5fc2b8; --alt: #9aa9e0; --focus: #f0935a; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 1.05rem; line-height: 1.55; }
+.wrap { max-width: 46rem; margin: 0 auto; padding: 2rem 1rem 3rem; display: grid; gap: 1.6rem; }
+header { display: grid; gap: .45rem; }
+.kicker { font-size: .85rem; color: var(--muted); }
+.kicker a, footer a, .notes a, .prose a { color: var(--ink); }
+h1 { font-family: var(--display); font-weight: 900; font-size: clamp(2.3rem, 8vw, 3.5rem); line-height: 1; margin: 0; letter-spacing: -.02em; }
+h2 { font-family: var(--display); font-weight: 700; font-size: 1.4rem; line-height: 1.2; margin: 0; text-wrap: balance; }
+h3 { font-family: var(--display); font-weight: 700; font-size: 1.08rem; margin: 0; }
+.lede { margin: 0; max-width: 62ch; color: var(--muted); }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 1.4rem; display: grid; gap: 1rem; }
+.meta { display: flex; justify-content: space-between; gap: 1rem; font-size: .85rem; color: var(--muted); }
+.progress { height: 4px; background: var(--line); border-radius: 2px; overflow: hidden; }
+.progress span { display: block; height: 100%; background: var(--ink); }
+.then { margin: 0; padding: .7rem .9rem; border-left: 4px solid var(--then); background: var(--paper); border-radius: 0 8px 8px 0; max-width: 62ch; }
+.q { font-size: 1.15rem; font-weight: 600; margin: 0; text-wrap: balance; }
+.guess-row { display: flex; align-items: center; gap: 1rem; }
+.guess-row input { flex: 1; accent-color: var(--you); height: 2rem; }
+.guess-val { font-family: var(--display); font-weight: 900; font-size: 2rem; min-width: 5ch; text-align: right; color: var(--you); font-variant-numeric: tabular-nums; }
+.choices { display: grid; gap: .45rem; }
+.choices button { font: inherit; text-align: left; padding: .6rem .9rem; border-radius: 10px; border: 1px solid var(--muted); background: transparent; color: var(--ink); cursor: pointer; }
+.choices button[aria-pressed="true"] { border: 2px solid var(--ink); font-weight: 600; }
+.choices button.right { border: 2px solid var(--now); }
+.choices button:disabled { cursor: default; }
+.primary { font: inherit; font-weight: 600; padding: .65rem 1.2rem; border-radius: 10px; border: 1px solid var(--ink); background: var(--ink); color: var(--paper); cursor: pointer; }
+.linkish { font: inherit; font-size: .9rem; background: none; border: none; padding: 0; color: var(--muted); text-decoration: underline; cursor: pointer; }
+button:focus-visible, input:focus-visible, a:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.bars { display: grid; gap: .7rem; }
+.brow { display: grid; grid-template-columns: 9.5rem 1fr; gap: .6rem; align-items: center; }
+.brow .lab { font-size: .9rem; line-height: 1.25; }
+.track { position: relative; height: 1.9rem; background: var(--line); border-radius: 5px; overflow: hidden; }
+.seg { position: absolute; left: 0; top: 0; bottom: 0; }
+.val { position: absolute; top: 0; bottom: 0; display: flex; align-items: center; font-weight: 700; font-size: .9rem; font-variant-numeric: tabular-nums; padding-left: .4rem; white-space: nowrap; }
+.scale { font-size: .78rem; color: var(--muted); margin: -.3rem 0 0; }
+.take { margin: 0; max-width: 62ch; }
+.prose p, .prose ol { margin: 0 0 .7rem; max-width: 64ch; }
+.prose li { margin-bottom: .4rem; }
+.tablewrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; font-size: .95rem; }
+th, td { text-align: right; padding: .45rem .5rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+th:first-child, td:first-child { text-align: left; }
+th { font-size: .8rem; color: var(--muted); font-weight: 600; }
+td small { color: var(--muted); }
+.notes { font-size: .88rem; color: var(--muted); }
+footer { font-size: .85rem; color: var(--muted); }
+.hidden { display: none !important; }
+@media (max-width: 560px) { .card { padding: 1.1rem; } .brow { grid-template-columns: 1fr; gap: .2rem; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="kicker">By Gwen Sharp · <a href="https://x.com/gsharpokie">@gsharpokie</a></div>
+    <h1>Then and Now: The American Family</h1>
+    <p class="lede">People often talk about how much families have changed, but how much, and in which direction? For each question, you’ll see where things stood about 50 years ago. Guess where they stand now, then check your guess against federal statistics and national surveys.</p>
+  </header>
+
+  <section class="card" id="quiz" aria-live="polite">
+    <div class="meta"><span id="counter"></span><button class="linkish" id="skip">Skip to all the answers</button></div>
+    <div class="progress" aria-hidden="true"><span id="bar"></span></div>
+    <p class="then" id="thenText"></p>
+    <p class="q" id="qText"></p>
+    <div id="sliderBlock" class="hidden">
+      <div class="guess-row"><input type="range" id="slider" aria-label="Your guess"><output id="sv" class="guess-val" for="slider"></output></div>
+    </div>
+    <div class="choices hidden" id="choices"></div>
+    <div id="reveal" class="hidden" style="display:grid;gap:1rem">
+      <div class="bars" id="rbars"></div>
+      <p class="scale" id="rscale"></p>
+      <p class="take" id="take"></p>
+    </div>
+    <div><button class="primary" id="lock">Lock in my guess</button><button class="primary hidden" id="next">Next question</button></div>
+  </section>
+
+  <section class="card hidden after" id="lists">
+    <h2>Then and now at a glance</h2>
+    <div class="tablewrap"><table id="summary"></table></div>
+  </section>
+
+  <section class="card hidden after">
+    <h2>All nine answers</h2>
+    <div id="answers" style="display:grid;gap:.6rem"></div>
+  </section>
+
+  <section class="card prose hidden after">
+    <h2>The fuller picture</h2>
+    <p><strong>Which “then” are we comparing to?</strong> Many comparisons, including the ones here, start in the 1960s or 1970s, close to an unusual moment. Americans married youngest in 1956, when the typical man married at 22.5 and the typical woman at 20.1. In 1890, the typical ages were 26.1 for men and 22.0 for women. Historian Stephanie Coontz’s book <em>The Way We Never Were</em> argues that the 1950s family many people picture as “traditional” was historically unusual. The starting year you pick shapes the story the trend seems to tell.</p>
+    <p><strong>Divorce: down, with one exception.</strong> The divorce rate fell from 22.6 per 1,000 married women around 1980 to 14.4 in 2023. Part of the reason is who marries: people with more education have become more likely than others to marry, and they are less likely to divorce. The exception is “gray divorce.” Among married women 50 and older, the rate rose from 3.9 per 1,000 in 1990 to 11.0 in 2008 and was 10.3 in 2023. What about “half of all marriages end in divorce”? Among Americans who married in the 1970s, 47% had seen their first marriage end in divorce by 2023. Among everyone who has ever married, it’s about one in three, though some of those married more recently will still divorce.</p>
+    <p><strong>Births: later, fewer, and a plateau in unmarried births.</strong> The share of births to unmarried women peaked at 41.0% in 2009 and was 39.5% in 2024. “Unmarried” includes parents who live together without marrying. In 2024, the average woman having her first baby was 27.6, a record high. The total fertility rate was also a record low: if 2024’s birth rates held, women would have about 1.6 children each on average, below the roughly 2.1 needed for a population to replace itself without immigration. Births to teenagers hit a record low too, at 12.6 per 1,000 women ages 15 to 19.</p>
+    <p><strong>Young adults at home.</strong> In 2025, 58% of 18- to 24-year-olds lived in their parents’ home, compared with 16% of 25- to 34-year-olds. One catch: the survey behind these numbers counts college students living in dorms as living with their parents, which inflates the figure for the younger group.</p>
+    <p><strong>Dads: more involved, still not equal.</strong> In 2016, fathers spent about 8 hours a week on child care and 10 on housework, up from 2.5 and 4 in 1965. Mothers still did more: about 14 hours of child care and 18 of housework.</p>
+    <p><strong>Attitudes changed along with behavior.</strong> In 1990, 63% of non-Black adults said they would oppose a close relative marrying a Black person. By 2016, 14% did.</p>
+    <p><strong>Other fields to bring in.</strong> Economists study how women’s jobs and earnings changed what marriage offers both partners; among women ages 25 to 34, the share who were homemakers fell from 43% in 1975 to 14% in 2016. Demographers project how lower fertility will change the age structure of the population. Historians, like Coontz, ask which past we’re comparing ourselves to.</p>
+    <h3>Talk about it</h3>
+    <ol>
+      <li>Which guess was furthest off? Were your misses in a particular direction?</li>
+      <li>Which changes here would you call problems, which would you call improvements, and which are neither? Would everyone in your class sort them the same way? Why or why not?</li>
+      <li>Fewer households are married couples, but the divorce rate has fallen. How can both be true?</li>
+      <li>In 1975, the most common path for 25- to 34-year-olds was moving out, working, marrying, and having kids. What has changed about the economy, education, and expectations that might explain why that path is less common now?</li>
+      <li>Most comparisons here start around 1970. How might the story change if they started in 1900, or in 2000?</li>
+    </ol>
+  </section>
+
+  <section class="notes prose hidden after">
+    <h3>About the data</h3>
+    <p>Each question uses the most recent figure available from a federal agency or a national research organization, so the “now” years differ: 2016 for fathers’ time and 2015 for intermarriage are the latest national figures I could find from those sources. The household, marriage-age, and living-at-home figures come from the Census Bureau’s Current Population Survey; birth figures come from birth certificates collected by the National Center for Health Statistics.</p>
+    <p><strong>Sources:</strong></p>
+    <ul>
+      <li>U.S. Census Bureau. 2025. <a href="https://www.census.gov/newsroom/press-releases/2025/families-and-living-arrangements.html">“Census Bureau Releases New Estimates on America’s Families and Living Arrangements”</a> (CB25-TPS.78), and <a href="https://www.census.gov/data/tables/time-series/demo/families/marital.html">Table MS-2, Estimated Median Age at First Marriage</a>.</li>
+      <li>Hemez, Paul, and Jonathan Vespa. 2025. <a href="https://www.census.gov/library/stories/2025/08/milestones-to-adulthood.html">“Significant Drop in Share of Young Adults Achieving Four Milestones.”</a> U.S. Census Bureau.</li>
+      <li>Vespa, Jonathan. 2017. <a href="https://www.census.gov/content/dam/Census/library/publications/2017/demo/p20-579.pdf"><em>The Changing Economics and Demographics of Young Adulthood: 1975–2016</em></a>. U.S. Census Bureau, P20-579.</li>
+      <li>Pew Research Center. 2025. <a href="https://www.pewresearch.org/short-reads/2025/10/16/8-facts-about-divorce-in-the-united-states/">“8 Facts about Divorce in the United States.”</a></li>
+      <li>Osterman, Michelle J. K., Brady E. Hamilton, Joyce A. Martin, Anne K. Driscoll, and Claudia P. Valenzuela. 2026. <a href="https://www.cdc.gov/nchs/data/nvsr/nvsr75/nvsr75-02.pdf">“Births: Final Data for 2024.”</a> <em>National Vital Statistics Reports</em> 75(2).</li>
+      <li>Curtin, Sally C., Stephanie J. Ventura, and Gladys M. Martinez. 2014. <a href="https://www.cdc.gov/nchs/products/databriefs/db162.htm">“Recent Declines in Nonmarital Childbearing in the United States.”</a> NCHS Data Brief 162.</li>
+      <li>Mathews, T. J., and Brady E. Hamilton. 2009. <a href="https://www.cdc.gov/nchs/products/databriefs/db21.htm">“Delayed Childbearing: More Women Are Having Their First Child Later in Life.”</a> NCHS Data Brief 21.</li>
+      <li>Livingston, Gretchen, and Kim Parker. 2019. <a href="https://www.pewresearch.org/short-reads/2019/06/12/fathers-day-facts/">“8 Facts about American Dads.”</a> Pew Research Center.</li>
+      <li>Livingston, Gretchen, and Anna Brown. 2017. <a href="https://www.pewresearch.org/social-trends/2017/05/18/intermarriage-in-the-u-s-50-years-after-loving-v-virginia/"><em>Intermarriage in the U.S. 50 Years After Loving v. Virginia</em></a>. Pew Research Center.</li>
+      <li>National Center for Family &amp; Marriage Research, Bowling Green State University. <a href="https://www.bgsu.edu/ncfmr/resources/data/family-profiles/timing-first-marriage-fp-26-13.html">“The Timing of First Marriage: Age Trends and Characteristics”</a> (FP-26-13) and <a href="https://www.bgsu.edu/ncfmr/resources/data/family-profiles/julian-median-age-first-marriage-2021-fp-22-15.html">“Median Age at First Marriage, 2021”</a> (FP-22-15).</li>
+      <li>Coontz, Stephanie. 1992. <em>The Way We Never Were: American Families and the Nostalgia Trap</em>. Basic Books.</li>
+    </ul>
+    <h3>How to cite this page</h3>
+    <p>Sharp, Gwen. 2026. “Then and Now: The American Family.” <a href="https://gsharpokie.github.io/familytrends/">https://gsharpokie.github.io/familytrends/</a></p>
+    <p>Spot an error? <a href="https://github.com/gsharpokie/familytrends/issues/new">Suggest a correction</a> (needs a free GitHub account).</p>
+  </section>
+
+  <footer>Created by Gwen Sharp (<a href="https://x.com/gsharpokie">@gsharpokie</a>). Licensed under <a href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC 4.0</a>.</footer>
+</div>
+
+<script>
+// Each question: then (shown before guessing), q, unit, scale [min, max] for the bars, and rows for the reveal.
+// Slider questions also have: ans (the value the guess is scored against), step, start, near (how close counts as "very close").
+// Row format: [label, value, color, text-override, faded]. Faded marks an approximate bar ("Under 25%"). A value of null draws an empty track.
+const PCT = { unit: "%", scale: [0, 100] };
+const Q = [
+  { type: "slider", ...{ unit: " yrs", scale: [15, 35] }, min: 15, max: 35, step: .5, start: 22, ans: 28.4, near: 1,
+    then: "In 1975, the median age at first marriage was 21.1 for women and 23.5 for men. (Median means half of first marriages happened at a younger age, half at an older one.)",
+    q: "In 2025, what was the median age at first marriage for women?",
+    short: "Median age at first marriage (women)", thenLab: "1975", nowLab: "2025",
+    rows: g => [["Your guess", g, "var(--you)"], ["Women, 1975", 21.1, "var(--then)"], ["Women, 2025", 28.4, "var(--now)"], ["Men, 1975", 23.5, "var(--then)"], ["Men, 2025", 30.8, "var(--now)"]],
+    take: g => `${miss(g, 28.4, " years", 1)} It was <strong>28.4</strong> for women and <strong>30.8</strong> for men, both about seven years older than in 1975. The typical age for men is the highest on record, which goes back to 1890.`,
+    src: "U.S. Census Bureau, Table MS-2" },
+  { type: "slider", ...PCT, min: 0, max: 100, step: 1, start: 50, ans: 47, near: 3,
+    then: "In 1975, 66% of U.S. households were married couples, with or without children.",
+    q: "In 2025, what percentage of households were married couples?",
+    short: "Households that are married couples", thenLab: "1975", nowLab: "2025",
+    rows: g => [["Your guess", g, "var(--you)"], ["1975", 66, "var(--then)"], ["2025", 47, "var(--now)"]],
+    take: g => `${miss(g, 47, " points", 3)} Fewer than half, <strong>47%</strong>. Married couples are still the most common kind of household, but they’re no longer a majority. And among married-couple households, the share with their own children under 18 at home fell from 54% to about 37%.`,
+    src: "U.S. Census Bureau, CPS (CB25-TPS.78)" },
+  { type: "slider", ...PCT, min: 0, max: 100, step: 1, start: 50, ans: 29, near: 3,
+    then: "In 1975, 20% of U.S. households were one person living alone.",
+    q: "In 2025, what percentage of households were one person living alone?",
+    short: "Households of one person living alone", thenLab: "1975", nowLab: "2025",
+    rows: g => [["Your guess", g, "var(--you)"], ["1975", 20, "var(--then)"], ["2025", 29, "var(--now)"]],
+    take: g => `${miss(g, 29, " points", 3)} <strong>29%</strong>, or 39.7 million households. The population is older, too: householders 65 and older went from about 1 in 5 households in 1975 to more than 1 in 4 in 2025. And people are marrying later.`,
+    src: "U.S. Census Bureau, CPS (CB25-TPS.78)" },
+  { type: "choice", unit: "", scale: [0, 25],
+    then: "Around 1980, there were 22.6 divorces each year for every 1,000 married women, the highest rate on record.",
+    q: "Since then, what has happened to the divorce rate?", aq: "What has happened to the divorce rate since its 1980 peak?",
+    opts: ["It kept rising", "It stayed about the same", "It fell by about a third", "It fell by more than three-quarters"], a: 2,
+    short: "Divorces per 1,000 married women", thenLab: "1980", nowLab: "2023", thenVal: "22.6", nowVal: "14.4",
+    rows: () => [["1980", 22.6, "var(--then)"], ["2008", 20.5, "var(--then)"], ["2023", 14.4, "var(--now)"]],
+    take: () => `It fell to <strong>14.4</strong> divorces per 1,000 married women in 2023, down 36% from the peak. Most of that drop came after 2008. “The fuller picture” below covers why, and the one group whose divorce rate went up.`,
+    src: "Pew Research Center analysis (2025)" },
+  { type: "slider", ...PCT, min: 0, max: 100, step: 1, start: 50, ans: 39.5, near: 3,
+    then: "In 1970, 10.7% of U.S. births were to unmarried women.",
+    q: "In 2024, what percentage of births were to unmarried women?",
+    short: "Births to unmarried women", thenLab: "1970", nowLab: "2024",
+    rows: g => [["Your guess", g, "var(--you)"], ["1970", 10.7, "var(--then)"], ["2009 (peak)", 41.0, "var(--then)", "41.0%"], ["2024", 39.5, "var(--now)"]],
+    take: g => `${miss(g, 39.5, " points", 3)} <strong>39.5%</strong>, almost four times the 1970 share. But it peaked in 2009 at 41.0% and has drifted down since. “Unmarried” includes many parents who live together without marrying.`,
+    src: "NCHS, NVSR 75(2); NCHS Data Brief 162" },
+  { type: "slider", ...{ unit: " yrs", scale: [15, 35] }, min: 15, max: 35, step: .5, start: 22, ans: 27.6, near: 1,
+    then: "In 1970, the average age of a woman having her first baby was 21.4.",
+    q: "In 2024, what was the average age of a woman having her first baby?",
+    short: "Average age of mothers at first birth", thenLab: "1970", nowLab: "2024",
+    rows: g => [["Your guess", g, "var(--you)"], ["1970", 21.4, "var(--then)"], ["2024", 27.6, "var(--now)"]],
+    take: g => `${miss(g, 27.6, " years", 1)} <strong>27.6</strong>, the highest on record. The 2024 fertility rate was a record low.`,
+    src: "NCHS, NVSR 75(2); NCHS Data Brief 21" },
+  { type: "slider", ...{ unit: " hrs", scale: [0, 20] }, min: 0, max: 20, step: .5, start: 5, ans: 8, near: 1,
+    then: "In 1965, fathers spent an average of 2.5 hours a week on child care.",
+    q: "In 2016, how many hours a week did fathers spend on child care?",
+    short: "Fathers’ child care, hours per week", thenLab: "1965", nowLab: "2016",
+    rows: g => [["Your guess", g, "var(--you)"], ["Fathers, 1965", 2.5, "var(--then)"], ["Fathers, 2016", 8, "var(--now)"], ["Mothers, 2016", 14, "var(--alt)"]],
+    take: g => `${miss(g, 8, " hours", 1)} About <strong>8</strong> hours, roughly triple the 1965 figure. Mothers still spent more, about 14 hours a week.`,
+    src: "Pew Research Center analysis of time-diary data" },
+  { type: "choice", ...PCT,
+    then: "In 1975, 45% of 25- to 34-year-olds had reached all four traditional milestones of adulthood: living away from their parents, working, married, and with children. It was the most common combination.",
+    q: "In 2024, what share of 25- to 34-year-olds had reached all four?",
+    opts: ["About the same, around 45%", "About a third", "Less than a quarter", "Fewer than one in ten"], a: 2,
+    short: "Ages 25–34 with all four milestones", thenLab: "1975", nowLab: "2024", thenVal: "45%", nowVal: "under 25%",
+    rows: () => [["1975", 45, "var(--then)"], ["2024", 25, "var(--now)", "Under 25%", true]],
+    take: () => `<strong>Less than a quarter.</strong> The most common combination in 2024 was living on your own and working, but not married and without kids, at about 28%.`,
+    src: "U.S. Census Bureau (Hemez and Vespa 2025)" },
+  { type: "slider", ...PCT, min: 0, max: 100, step: 1, start: 50, ans: 17, near: 3,
+    then: "In 1967, the year the Supreme Court struck down bans on interracial marriage in <em>Loving v. Virginia</em>, 3% of newlyweds married someone of a different race or ethnicity.",
+    q: "In 2015, what percentage of newlyweds married someone of a different race or ethnicity?",
+    short: "Newlyweds married to someone of a different race or ethnicity", thenLab: "1967", nowLab: "2015",
+    rows: g => [["Your guess", g, "var(--you)"], ["1967", 3, "var(--then)"], ["2015", 17, "var(--now)"]],
+    take: g => `${miss(g, 17, " points", 3)} <strong>17%</strong>, about one in six, more than five times the 1967 share. Pew counts a marriage between a Hispanic and a non-Hispanic spouse as an intermarriage. Rates were highest for Asian (29%) and Hispanic (27%) newlyweds.`,
+    src: "Pew Research Center (Livingston and Brown 2017)" }
+];
+const $ = id => document.getElementById(id);
+const guesses = new Array(Q.length).fill(null);
+let idx = 0, choice = null;
+const fmt = (v, q) => (Number.isInteger(v) ? v : v.toFixed(1)) + (q.unit === "%" ? "%" : q.unit);
+function miss(g, a, word, near) {
+  if (g == null) return "";
+  const d = Math.abs(g - a);
+  if (d <= near) return "<strong>Very close.</strong>";
+  const dd = Number.isInteger(d) ? d : d.toFixed(1);
+  return `You guessed ${Number.isInteger(g) ? g : g.toFixed(1)}, ${dd}${word} ${g > a ? "too high" : "too low"}.`;
+}
+function rowHTML(r, q) {
+  const [lab, v, color, text, faded] = r;
+  const [lo, hi] = q.scale;
+  let inner, aria;
+  if (v == null) { inner = `<div class="val" style="left:0;color:var(--muted)">No guess</div>`; aria = "no guess"; }
+  else {
+    const w = Math.max(0, Math.min(100, (v - lo) / (hi - lo) * 100));
+    const shown = text || fmt(v, q);
+    const op = faded ? ";opacity:.55" : "";
+    inner = `<div class="seg" style="width:${w}%;background:${color}${op}"></div><div class="val" style="left:${Math.min(w, 78)}%">${shown}</div>`;
+    aria = shown;
+  }
+  return `<div class="brow"><span class="lab">${lab}</span><div class="track" role="img" aria-label="${lab}: ${aria}">${inner}</div></div>`;
+}
+const scaleNote = q => q.scale[0] === 0 ? "" : `Bars start at ${q.scale[0]}${q.unit === "%" ? "%" : q.unit}, not zero, so differences are easier to see.`;
+function render() {
+  if (idx >= Q.length) return finish();
+  const q = Q[idx]; choice = null;
+  $("counter").textContent = `Question ${idx + 1} of ${Q.length}`;
+  $("bar").style.width = (idx / Q.length * 100) + "%";
+  $("thenText").innerHTML = "<strong>Then:</strong> " + q.then;
+  $("qText").textContent = q.q;
+  $("reveal").classList.add("hidden"); $("next").classList.add("hidden"); $("lock").classList.remove("hidden");
+  $("next").textContent = idx === Q.length - 1 ? "See all the answers" : "Next question";
+  if (q.type === "slider") {
+    $("sliderBlock").classList.remove("hidden"); $("choices").classList.add("hidden");
+    const s = $("slider"); s.min = q.min; s.max = q.max; s.step = q.step; s.value = q.start; s.disabled = false;
+    s.setAttribute("aria-label", "Your guess, in " + (q.unit === "%" ? "percent" : q.unit.trim() === "yrs" ? "years" : "hours"));
+    $("sv").textContent = fmt(+s.value, q); $("lock").disabled = false;
+  } else {
+    $("sliderBlock").classList.add("hidden"); $("choices").classList.remove("hidden");
+    $("choices").innerHTML = q.opts.map((o, i) => `<button data-i="${i}" aria-pressed="false">${o}</button>`).join("");
+    document.querySelectorAll("#choices button").forEach(b => b.addEventListener("click", () => {
+      choice = +b.dataset.i; document.querySelectorAll("#choices button").forEach(o => o.setAttribute("aria-pressed", o === b)); $("lock").disabled = false;
+    }));
+    $("lock").disabled = true;
+  }
+}
+function reveal() {
+  const q = Q[idx];
+  if (q.type === "slider") { guesses[idx] = +$("slider").value; $("slider").disabled = true; }
+  else { guesses[idx] = choice; document.querySelectorAll("#choices button").forEach((b, j) => { b.disabled = true; if (j === q.a) b.classList.add("right"); }); }
+  $("rbars").innerHTML = q.rows(guesses[idx]).map(r => rowHTML(r, q)).join("");
+  $("rscale").textContent = scaleNote(q);
+  let t = q.take(guesses[idx]);
+  if (q.type === "choice") t = (choice === q.a ? "<strong>Right.</strong> " : "<strong>Not quite.</strong> ") + t;
+  $("take").innerHTML = t;
+  $("reveal").classList.remove("hidden"); $("lock").classList.add("hidden"); $("next").classList.remove("hidden"); $("next").focus();
+}
+function finish() {
+  $("quiz").classList.add("hidden");
+  document.querySelectorAll(".after").forEach(e => e.classList.remove("hidden"));
+  $("summary").innerHTML = `<thead><tr><th scope="col">Measure</th><th scope="col">Then</th><th scope="col">Now</th></tr></thead><tbody>` +
+    Q.map(q => {
+      const t = q.thenVal || fmt(q.rows(null).find(r => r[0].includes(q.thenLab))[1], q);
+      const n = q.nowVal || fmt(q.ans, q);
+      return `<tr><td>${q.short}<br><small>${q.src}</small></td><td>${t}<br><small>${q.thenLab}</small></td><td><strong>${n}</strong><br><small>${q.nowLab}</small></td></tr>`;
+    }).join("") + "</tbody>";
+  $("answers").innerHTML = Q.map((q, i) => {
+    const rows = q.rows(guesses[i]).filter(r => !(r[0] === "Your guess" && guesses[i] == null));
+    return `<h3 style="font-size:1rem;margin-top:.4rem">${i + 1}. ${q.aq || q.q}</h3><div class="bars">${rows.map(r => rowHTML(r, q)).join("")}</div>${scaleNote(q) ? `<p class="scale" style="margin:0">${scaleNote(q)}</p>` : ""}`;
+  }).join("");
+  document.querySelector(".after").scrollIntoView({ block: "start" });
+}
+$("slider").addEventListener("input", e => $("sv").textContent = fmt(+e.target.value, Q[idx]));
+$("lock").addEventListener("click", reveal);
+$("next").addEventListener("click", () => { idx++; render(); });
+$("skip").addEventListener("click", () => { idx = Q.length; finish(); });
+if (location.hash === "#answers" || location.hash === "#lists") { idx = Q.length; finish(); } else render();
+</script>
+</body>
+</html>
