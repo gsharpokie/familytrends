@@ -9,12 +9,15 @@ An interactive guess-first activity about how U.S. families have changed. For ea
 - **Nine questions:** age at first marriage, married-couple households, living alone, divorce, births to unmarried women, age at first birth, fathers’ time on child care, the four “milestones” of adulthood, and intermarriage.
 - **Then and now at a glance:** a summary table with sources.
 - **All nine answers** in one place.
+- **See the long-run trends:** seven line charts, chosen with buttons, with a year slider, a “what to notice” note, a “keep in mind” note about how the numbers were collected, and a table of the numbers. Median age at first marriage (1890–2025); who children live with (1960–2025); married-couple and one-person households (1940–2025); average household size (1940–2025); births to unmarried women (1940–2024); marriage and divorce rates (2000–2024); young adults living with a parent, by age and sex (1960–2025).
 - **The fuller picture:** why the starting year matters (the 1950s were unusual), why divorce fell and “gray divorce” didn’t, the plateau in unmarried births, record-low fertility, young adults living at home (and the dorm-counting catch), fathers vs. mothers, changing attitudes, and connections to economics, demography, and history.
 - **Discussion questions.**
 
 ## For instructors
 
 To show all the answers without guessing, add `#answers` to the link: https://gsharpokie.github.io/familytrends/#answers
+
+To jump straight to the charts, add `#charts` instead: https://gsharpokie.github.io/familytrends/#charts
 
 ## Data
 
@@ -34,11 +37,19 @@ To show all the answers without guessing, add `#answers` to the link: https://gs
 - NCFMR, Bowling Green State University, FP-26-13 and FP-22-15. — Lowest median ages at first marriage in 1956 (22.5 men, 20.1 women); 1890: 26.1 and 22.0.
 - Coontz, Stephanie. 1992. *The Way We Never Were*. Basic Books.
 
+**For the charts:**
+
+- U.S. Census Bureau, historical tables on families and living arrangements (through 2025, released December 2025). https://www.census.gov/data/tables/time-series/demo/families.html — Table MS-2 (median age at first marriage); Table CH-1 (living arrangements of children; “No parent” combines the table’s two “no parents” columns); Tables HH-1, HH-4, and HH-6 (households by type and size); Table AD-1 (young adults living at home). Percentages are calculated from the counts. Where a year has an original and a revised row, the revised row is used; for 2007 in CH-1, the row using the newer method of identifying two parents is used.
+- National Center for Health Statistics, provisional marriage and divorce rates, 2000–2024. https://www.cdc.gov/nchs/data/dvs/marriage-divorce/national-marriage-divorce-rates-00-24.pdf
+- Percent of births to unmarried women: 1940–1999 from Ventura and Bachrach 2000, *NVSR* 48(16), table 1; 2000–2010 from “Births: Final Data for 2010,” *NVSR* 61(1), table C; 2011–2024 from the text of each year’s “Births: Final Data” report.
+
 ## Editing
 
 All nine questions are in `const Q = [` near the top of the `<script>` section of `index.html`. Each has the “then” statement, the question, the answer (`ans`), the bars (`rows`), and the text shown after the guess (`take`). The summary table builds itself from those. “The fuller picture” is plain text in the page.
 
 **Good update candidates:** Census releases new Families and Living Arrangements tables each fall; NCHS publishes final birth data each year. Fathers’ time (2016) and intermarriage (2015) are the oldest figures; replace them if Pew publishes newer national numbers.
+
+**Updating the charts:** the chart numbers are in the second `<script>` block, between `DATA:START` and `DATA:END`. Each series is a list of `year:value` pairs, and the “what to notice” notes are calculated from them. For the Census series, download `ms2.xls`, `ch1.xls`, `hh1.xls`, `hh4.xls`, `hh6.xls`, and `ad1.xls` from https://www2.census.gov/programs-surveys/demo/tables/families/time-series/ into one folder, run `python3 tools/build_data.py FOLDER`, and paste the output over the Census lines. Add new years to `MAR_RATE`, `DIV_RATE`, and `NONMAR` by hand from the NCHS sources above.
 
 ## Turning on the site (one time)
 

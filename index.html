@@ -29,6 +29,7 @@
 :root {
   --paper: #f3f5f2; --surface: #ffffff; --ink: #1c2b2a; --muted: #5a6a68; --line: #d8dfdc;
   --you: #c0581d; --then: #9fb5b1; --now: #1f6f69; --alt: #6b7fb8;
+  --s1: #2a6fb0; --s2: #c2571a; --s3: #2f8f6b; --s4: #8a5fb5;
   --focus: #c0581d;
   --display: "Libre Franklin", "Segoe UI", system-ui, sans-serif;
   --body: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
@@ -38,11 +39,13 @@
   :root:not([data-theme="light"]) {
     --paper: #111a19; --surface: #182423; --ink: #e8efed; --muted: #a3b3b0; --line: #2f3f3d;
     --you: #f0935a; --then: #50706b; --now: #5fc2b8; --alt: #9aa9e0; --focus: #f0935a; color-scheme: dark;
+    --s1: #4f95d6; --s2: #d6703a; --s3: #3faa80; --s4: #a182d2;
   }
 }
 :root[data-theme="dark"] {
   --paper: #111a19; --surface: #182423; --ink: #e8efed; --muted: #a3b3b0; --line: #2f3f3d;
   --you: #f0935a; --then: #50706b; --now: #5fc2b8; --alt: #9aa9e0; --focus: #f0935a; color-scheme: dark;
+    --s1: #4f95d6; --s2: #d6703a; --s3: #3faa80; --s4: #a182d2;
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; }
@@ -90,6 +93,29 @@ th { font-size: .8rem; color: var(--muted); font-weight: 600; }
 td small { color: var(--muted); }
 .notes { font-size: .88rem; color: var(--muted); }
 footer { font-size: .85rem; color: var(--muted); }
+.trends { display: flex; flex-wrap: wrap; gap: .5rem; }
+.trends button { font: inherit; font-weight: 600; font-size: .95rem; padding: .45rem .8rem; border-radius: 10px; border: 1px solid var(--ink); background: transparent; color: var(--ink); cursor: pointer; }
+.trends button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.sub { margin: 0; color: var(--muted); font-size: .95rem; }
+.legend:empty { display: none; }
+.legend { display: flex; flex-wrap: wrap; gap: .3rem 1rem; font-size: .9rem; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: .4rem; }
+.chart svg { width: 100%; height: auto; display: block; overflow: visible; touch-action: pan-y; }
+.chart text { fill: var(--muted); font-family: var(--body); font-size: 16px; font-variant-numeric: tabular-nums; }
+.chart text.end { fill: var(--ink); font-size: 15px; }
+.readout { display: grid; grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr)); gap: .6rem; }
+.readout > div { border: 1px solid var(--line); border-radius: 10px; padding: .55rem .75rem; }
+.readout .num { font-family: var(--display); font-weight: 800; font-size: 1.5rem; font-variant-numeric: tabular-nums; line-height: 1.1; }
+.readout .cap { font-size: .8rem; color: var(--muted); display: flex; align-items: center; gap: .35rem; }
+.sw { display: inline-block; width: .7rem; height: .7rem; border-radius: 3px; flex: none; }
+.yearpick { display: flex; align-items: center; gap: .8rem; font-size: .9rem; color: var(--muted); }
+.yearpick input { flex: 1; accent-color: var(--ink); min-width: 0; }
+.notice { margin: 0; border-left: 4px solid var(--line); padding: .1rem 0 .1rem .9rem; max-width: 64ch; }
+.caveat { margin: 0; font-size: .9rem; color: var(--muted); max-width: 70ch; }
+details { font-size: .9rem; }
+summary { cursor: pointer; color: var(--muted); }
+summary:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.card { min-width: 0; }
 .hidden { display: none !important; }
 @media (max-width: 560px) { .card { padding: 1.1rem; } .brow { grid-template-columns: 1fr; gap: .2rem; } }
 </style>
@@ -129,9 +155,29 @@ footer { font-size: .85rem; color: var(--muted); }
     <div id="answers" style="display:grid;gap:.6rem"></div>
   </section>
 
+  <section class="card hidden after" id="charts" aria-labelledby="chartHead">
+    <h2 id="chartHead">See the long-run trends</h2>
+    <p class="take">The questions compared two moments. These charts show every year in between, and in some cases long before. Choose a trend, then move across the chart or use the slider to read any year.</p>
+    <div class="trends" id="trends" role="group" aria-label="Choose a trend"></div>
+    <div>
+      <h3 id="tTitle"></h3>
+      <p class="sub" id="tSub"></p>
+    </div>
+    <div class="legend" id="legend" aria-hidden="true"></div>
+    <div class="chart" id="chart"></div>
+    <div class="yearpick"><label for="yr">Pick a year</label><input type="range" id="yr" step="1"></div>
+    <div class="readout" id="readout" aria-live="polite"></div>
+    <p class="notice" id="tNotice"></p>
+    <p class="caveat" id="tCaveat"></p>
+    <details>
+      <summary>Show the numbers as a table</summary>
+      <div class="tablewrap"><table id="tbl"></table></div>
+    </details>
+  </section>
+
   <section class="card prose hidden after">
     <h2>The fuller picture</h2>
-    <p><strong>Which “then” are we comparing to?</strong> Many comparisons, including the ones here, start in the 1960s or 1970s, close to an unusual moment. Americans married youngest in 1956, when the typical man married at 22.5 and the typical woman at 20.1. In 1890, the typical ages were 26.1 for men and 22.0 for women. Historian Stephanie Coontz’s book <em>The Way We Never Were</em> argues that the 1950s family many people picture as “traditional” was historically unusual. The starting year you pick shapes the story the trend seems to tell.</p>
+    <p><strong>Which “then” are we comparing to?</strong> Many comparisons, including the ones here, start in the 1960s or 1970s, close to an unusual moment. Americans married youngest in 1956, when the typical man married at 22.5 and the typical woman at 20.1. In 1890, the typical ages were 26.1 for men and 22.0 for women. Historian Stephanie Coontz’s book <em>The Way We Never Were</em> argues that the 1950s family many people picture as “traditional” was historically unusual. The starting year you pick shapes the story the trend seems to tell. You can see this in the “Age at marriage” chart above, which goes back to 1890.</p>
     <p><strong>Divorce: down, with one exception.</strong> The divorce rate fell from 22.6 per 1,000 married women around 1980 to 14.4 in 2023. Part of the reason is who marries: people with more education have become more likely than others to marry, and they are less likely to divorce. The exception is “gray divorce.” Among married women 50 and older, the rate rose from 3.9 per 1,000 in 1990 to 11.0 in 2008 and was 10.3 in 2023. What about “half of all marriages end in divorce”? Among Americans who married in the 1970s, 47% had seen their first marriage end in divorce by 2023. Among everyone who has ever married, it’s about one in three, though some of those married more recently will still divorce.</p>
     <p><strong>Births: later, fewer, and a plateau in unmarried births.</strong> The share of births to unmarried women peaked at 41.0% in 2009 and was 39.5% in 2024. “Unmarried” includes parents who live together without marrying. In 2024, the average woman having her first baby was 27.6, a record high. The total fertility rate was also a record low: if 2024’s birth rates held, women would have about 1.6 children each on average, below the roughly 2.1 needed for a population to replace itself without immigration. Births to teenagers hit a record low too, at 12.6 per 1,000 women ages 15 to 19.</p>
     <p><strong>Young adults at home.</strong> In 2025, 58% of 18- to 24-year-olds lived in their parents’ home, compared with 16% of 25- to 34-year-olds. One catch: the survey behind these numbers counts college students living in dorms as living with their parents, which inflates the figure for the younger group.</p>
@@ -144,13 +190,15 @@ footer { font-size: .85rem; color: var(--muted); }
       <li>Which changes here would you call problems, which would you call improvements, and which are neither? Would everyone in your class sort them the same way? Why or why not?</li>
       <li>Fewer households are married couples, but the divorce rate has fallen. How can both be true?</li>
       <li>In 1975, the most common path for 25- to 34-year-olds was moving out, working, marrying, and having kids. What has changed about the economy, education, and expectations that might explain why that path is less common now?</li>
-      <li>Most comparisons here start around 1970. How might the story change if they started in 1900, or in 2000?</li>
+      <li>Most comparisons here start around 1970. How might the story change if they started in 1900, or in 2000? Use the charts to check.</li>
+      <li>In the “Children” chart, “two parents” includes stepparents, adoptive parents, and (since 2007) parents who live together without being married. How would the picture change if it counted only married biological parents? Which definition fits which question?</li>
     </ol>
   </section>
 
   <section class="notes prose hidden after">
     <h3>About the data</h3>
     <p>Each question uses the most recent figure available from a federal agency or a national research organization, so the “now” years differ: 2016 for fathers’ time and 2015 for intermarriage are the latest national figures I could find from those sources. The household, marriage-age, and living-at-home figures come from the Census Bureau’s Current Population Survey; birth figures come from birth certificates collected by the National Center for Health Statistics.</p>
+    <p><strong>The charts</strong> use the Census Bureau’s historical tables on families and living arrangements (through 2025) and National Center for Health Statistics reports. Percentages are calculated from the counts in the Census tables. In years when the Census Bureau published both an original and a revised estimate, the revised one is shown. Dots mark years that stand alone, such as census years, and the lines connect across the gaps. The divorce figures in the “Divorce” chart leave out several states that don’t report divorces (in 2024: California, Hawaii, Indiana, Minnesota, and New Mexico).</p>
     <p><strong>Sources:</strong></p>
     <ul>
       <li>U.S. Census Bureau. 2025. <a href="https://www.census.gov/newsroom/press-releases/2025/families-and-living-arrangements.html">“Census Bureau Releases New Estimates on America’s Families and Living Arrangements”</a> (CB25-TPS.78), and <a href="https://www.census.gov/data/tables/time-series/demo/families/marital.html">Table MS-2, Estimated Median Age at First Marriage</a>.</li>
@@ -163,6 +211,9 @@ footer { font-size: .85rem; color: var(--muted); }
       <li>Livingston, Gretchen, and Kim Parker. 2019. <a href="https://www.pewresearch.org/short-reads/2019/06/12/fathers-day-facts/">“8 Facts about American Dads.”</a> Pew Research Center.</li>
       <li>Livingston, Gretchen, and Anna Brown. 2017. <a href="https://www.pewresearch.org/social-trends/2017/05/18/intermarriage-in-the-u-s-50-years-after-loving-v-virginia/"><em>Intermarriage in the U.S. 50 Years After Loving v. Virginia</em></a>. Pew Research Center.</li>
       <li>National Center for Family &amp; Marriage Research, Bowling Green State University. <a href="https://www.bgsu.edu/ncfmr/resources/data/family-profiles/timing-first-marriage-fp-26-13.html">“The Timing of First Marriage: Age Trends and Characteristics”</a> (FP-26-13) and <a href="https://www.bgsu.edu/ncfmr/resources/data/family-profiles/julian-median-age-first-marriage-2021-fp-22-15.html">“Median Age at First Marriage, 2021”</a> (FP-22-15).</li>
+      <li>U.S. Census Bureau. 2025. Historical tables on families and living arrangements: <a href="https://www.census.gov/data/tables/time-series/demo/families/marital.html">Table MS-2</a> (median age at first marriage), <a href="https://www.census.gov/data/tables/time-series/demo/families/children.html">Table CH-1</a> (living arrangements of children), <a href="https://www.census.gov/data/tables/time-series/demo/families/households.html">Tables HH-1, HH-4, and HH-6</a> (households by type and size), and <a href="https://www.census.gov/data/tables/time-series/demo/families/adults.html">Table AD-1</a> (young adults living at home).</li>
+      <li>National Center for Health Statistics. <a href="https://www.cdc.gov/nchs/data/dvs/marriage-divorce/national-marriage-divorce-rates-00-24.pdf">“Provisional Number of Marriages and Marriage Rate” and “Provisional Number of Divorces and Annulments and Rate: United States, 2000–2024.”</a></li>
+      <li>Ventura, Stephanie J., and Christine A. Bachrach. 2000. <a href="https://www.cdc.gov/nchs/data/nvsr/nvsr48/nvs48_16.pdf">“Nonmarital Childbearing in the United States, 1940–99.”</a> <em>National Vital Statistics Reports</em> 48(16). Later years come from the National Center for Health Statistics’ annual “Births: Final Data” reports.</li>
       <li>Coontz, Stephanie. 1992. <em>The Way We Never Were: American Families and the Nostalgia Trap</em>. Basic Books.</li>
     </ul>
     <h3>How to cite this page</h3>
@@ -324,7 +375,174 @@ $("slider").addEventListener("input", e => $("sv").textContent = fmt(+e.target.v
 $("lock").addEventListener("click", reveal);
 $("next").addEventListener("click", () => { idx++; render(); });
 $("skip").addEventListener("click", () => { idx = Q.length; finish(); });
-if (location.hash === "#answers" || location.hash === "#lists") { idx = Q.length; finish(); } else render();
+if (["#answers", "#lists", "#charts"].includes(location.hash)) { idx = Q.length; finish(); if (location.hash === "#charts") $("charts").scrollIntoView({ block: "start" }); } else render();
+</script>
+
+<script>
+/* ---------- Long-run trend charts ---------- */
+(function () {
+/* DATA:START
+   Census series below are generated by tools/build_data.py from the Census Bureau's historical tables.
+   Each is {year: value}. Years that aren't listed weren't published. */
+const AGE_M = {1890:26.1,1900:25.9,1910:25.1,1920:24.6,1930:24.3,1940:24.3,1947:23.7,1948:23.3,1949:22.7,1950:22.8,1951:22.9,1952:23.0,1953:22.8,1954:23.0,1955:22.6,1956:22.5,1957:22.6,1958:22.6,1959:22.5,1960:22.8,1961:22.8,1962:22.7,1963:22.8,1964:23.1,1965:22.8,1966:22.8,1967:23.1,1968:23.1,1969:23.2,1970:23.2,1971:23.1,1972:23.3,1973:23.2,1974:23.1,1975:23.5,1976:23.8,1977:24.0,1978:24.2,1979:24.4,1980:24.7,1981:24.8,1982:25.2,1983:25.4,1984:25.4,1985:25.5,1986:25.7,1987:25.8,1988:25.9,1989:26.2,1990:26.1,1991:26.3,1992:26.5,1993:26.5,1994:26.7,1995:26.9,1996:27.1,1997:26.8,1998:26.7,1999:26.9,2000:26.8,2001:26.9,2002:26.9,2003:27.1,2004:27.4,2005:27.1,2006:27.5,2007:27.5,2008:27.6,2009:28.1,2010:28.2,2011:28.4,2012:28.6,2013:29.0,2014:29.3,2015:29.2,2016:29.5,2017:29.5,2018:29.8,2019:29.8,2020:30.5,2021:30.3,2022:30.1,2023:30.2,2024:30.2,2025:30.8};
+const AGE_W = {1890:22.0,1900:21.9,1910:21.6,1920:21.2,1930:21.3,1940:21.5,1947:20.5,1948:20.4,1949:20.3,1950:20.3,1951:20.4,1952:20.2,1953:20.2,1954:20.3,1955:20.2,1956:20.1,1957:20.3,1958:20.2,1959:20.2,1960:20.3,1961:20.3,1962:20.3,1963:20.5,1964:20.5,1965:20.6,1966:20.5,1967:20.6,1968:20.8,1969:20.8,1970:20.8,1971:20.9,1972:20.9,1973:21.0,1974:21.1,1975:21.1,1976:21.3,1977:21.6,1978:21.8,1979:22.1,1980:22.0,1981:22.3,1982:22.5,1983:22.8,1984:23.0,1985:23.3,1986:23.1,1987:23.6,1988:23.6,1989:23.8,1990:23.9,1991:24.1,1992:24.4,1993:24.5,1994:24.5,1995:24.5,1996:24.8,1997:25.0,1998:25.0,1999:25.1,2000:25.1,2001:25.1,2002:25.3,2003:25.3,2004:25.3,2005:25.3,2006:25.5,2007:25.6,2008:25.9,2009:25.9,2010:26.1,2011:26.4,2012:26.6,2013:26.6,2014:27.0,2015:27.1,2016:27.4,2017:27.4,2018:27.8,2019:28.0,2020:28.1,2021:28.6,2022:28.2,2023:28.4,2024:28.6,2025:28.4};
+const KID_TWO = {1960:87.7,1968:85.4,1969:85.1,1970:85.2,1971:83.4,1972:83.1,1973:82.1,1974:81.4,1975:80.3,1976:80.0,1977:79.2,1978:77.7,1979:77.4,1980:76.7,1981:76.4,1982:75.0,1983:74.9,1984:74.9,1985:73.9,1986:73.9,1987:73.1,1988:72.7,1989:73.1,1990:72.5,1991:71.7,1992:70.7,1993:70.5,1994:69.2,1995:68.7,1996:68.0,1997:68.2,1998:68.1,1999:68.0,2000:69.1,2001:69.1,2002:68.7,2003:68.4,2004:67.8,2005:67.3,2006:67.4,2007:70.7,2008:69.9,2009:69.8,2010:69.4,2011:68.7,2012:68.1,2013:68.5,2014:68.7,2015:69.2,2016:68.7,2017:68.9,2018:69.1,2019:70.1,2020:70.4,2021:69.7,2022:70.2,2023:71.1,2024:71.2,2025:70.4};
+const KID_MOM = {1960:8.0,1968:10.7,1969:11.0,1970:10.8,1971:12.4,1972:12.8,1973:13.6,1974:14.4,1975:15.5,1976:15.8,1977:16.3,1978:17.0,1979:16.9,1980:18.0,1981:18.1,1982:20.0,1983:20.5,1984:20.4,1985:20.9,1986:21.0,1987:21.3,1988:21.4,1989:21.5,1990:21.6,1991:22.4,1992:23.3,1993:23.3,1994:23.5,1995:23.5,1996:24.0,1997:23.6,1998:23.3,1999:23.4,2000:22.4,2001:22.4,2002:22.8,2003:23.0,2004:23.3,2005:23.4,2006:23.3,2007:22.6,2008:22.8,2009:22.8,2010:23.1,2011:23.8,2012:24.4,2013:23.7,2014:23.6,2015:23.1,2016:23.4,2017:22.7,2018:22.2,2019:21.4,2020:21.0,2021:21.5,2022:21.5,2023:20.9,2024:20.2,2025:21.0};
+const KID_DAD = {1960:1.1,1968:1.1,1969:1.1,1970:1.1,1971:1.1,1972:1.2,1973:1.2,1974:1.3,1975:1.5,1976:1.2,1977:1.4,1978:1.6,1979:1.6,1980:1.7,1981:1.9,1982:1.9,1983:2.0,1984:2.2,1985:2.5,1986:2.5,1987:2.6,1988:2.9,1989:2.8,1990:3.1,1991:3.1,1992:3.3,1993:3.4,1994:3.2,1995:3.5,1996:3.9,1997:4.3,1998:4.4,1999:4.3,2000:4.2,2001:4.4,2002:4.6,2003:4.6,2004:4.6,2005:4.8,2006:4.7,2007:3.2,2008:3.5,2009:3.4,2010:3.4,2011:3.5,2012:4.0,2013:4.1,2014:3.9,2015:3.7,2016:4.1,2017:4.3,2018:4.4,2019:4.4,2020:4.5,2021:4.9,2022:4.7,2023:4.2,2024:4.6,2025:4.6};
+const KID_NONE = {1960:3.2,1968:2.8,1969:2.8,1970:2.9,1971:3.1,1972:2.9,1973:3.0,1974:3.0,1975:2.7,1976:2.9,1977:3.1,1978:3.7,1979:4.1,1980:3.7,1981:3.6,1982:3.1,1983:2.6,1984:2.5,1985:2.7,1986:2.6,1987:2.9,1988:3.0,1989:2.5,1990:2.8,1991:2.8,1992:2.7,1993:2.8,1994:4.1,1995:4.3,1996:4.1,1997:3.9,1998:4.1,1999:4.2,2000:4.2,2001:4.1,2002:4.0,2003:4.1,2004:4.3,2005:4.5,2006:4.6,2007:3.5,2008:3.8,2009:4.0,2010:4.1,2011:4.0,2012:3.6,2013:3.7,2014:3.8,2015:3.9,2016:3.8,2017:4.0,2018:4.3,2019:4.0,2020:4.1,2021:3.9,2022:3.6,2023:3.8,2024:4.1,2025:4.0};
+const HH_MARRIED = {1940:76.0,1947:78.3,1948:78.7,1949:78.8,1950:78.2,1951:77.0,1952:77.2,1953:76.7,1954:76.5,1955:75.7,1956:75.8,1957:75.9,1958:75.1,1959:74.7,1960:74.3,1961:74.0,1962:73.8,1963:74.0,1964:73.6,1965:72.6,1966:72.4,1967:72.2,1968:71.5,1969:70.9,1970:70.5,1971:69.4,1972:68.6,1973:67.8,1974:67.0,1975:66.0,1976:64.9,1977:64.0,1978:62.3,1979:61.6,1980:60.8,1981:59.8,1982:59.4,1983:59.5,1984:58.7,1985:58.0,1986:57.6,1987:57.6,1988:56.7,1989:56.1,1990:56.0,1991:55.3,1992:54.8,1993:55.1,1994:54.8,1995:54.4,1996:53.8,1997:53.1,1998:53.0,1999:52.7,2000:52.8,2001:52.3,2002:51.9,2003:51.5,2004:51.5,2005:51.2,2006:50.9,2007:50.8,2008:50.0,2009:50.5,2010:49.7,2011:48.9,2012:48.7,2013:48.3,2014:48.4,2015:48.2,2016:47.9,2017:48.2,2018:48.0,2019:48.2,2020:48.5,2021:47.4,2022:46.8,2023:47.3,2024:47.1,2025:46.6};
+const HH_ALONE = {1960:13.1,1961:13.3,1962:13.6,1963:13.6,1964:13.9,1965:15.0,1966:15.6,1967:15.5,1968:16.1,1969:16.7,1970:17.1,1971:17.7,1972:18.3,1973:18.5,1974:19.1,1975:19.6,1976:20.6,1977:20.9,1978:22.0,1979:22.2,1980:22.7,1981:23.0,1982:23.2,1983:22.9,1984:23.4,1985:23.7,1986:23.9,1987:23.6,1988:24.0,1989:24.5,1990:24.6,1991:25.0,1992:25.1,1993:24.4,1994:24.3,1995:25.0,1996:25.0,1997:25.1,1998:25.7,1999:25.6,2000:25.5,2001:26.1,2002:26.3,2003:26.4,2004:26.4,2005:26.6,2006:26.6,2007:26.8,2008:27.5,2009:27.0,2010:26.7,2011:27.5,2012:27.4,2013:27.4,2014:27.7,2015:28.0,2016:28.1,2017:27.9,2018:28.0,2019:28.4,2020:28.2,2021:28.2,2022:28.9,2023:29.0,2024:29.1,2025:29.5};
+const HH_SIZE = {1940:3.67,1947:3.56,1948:3.49,1949:3.42,1950:3.37,1951:3.34,1952:3.32,1953:3.28,1954:3.34,1955:3.33,1956:3.32,1957:3.33,1958:3.34,1959:3.34,1960:3.33,1961:3.36,1962:3.31,1963:3.33,1964:3.33,1965:3.31,1966:3.3,1967:3.28,1968:3.23,1969:3.19,1970:3.14,1971:3.11,1972:3.06,1973:3.01,1974:2.97,1975:2.94,1976:2.89,1977:2.86,1978:2.81,1979:2.78,1980:2.76,1981:2.73,1982:2.72,1983:2.73,1984:2.71,1985:2.69,1986:2.67,1987:2.66,1988:2.64,1989:2.62,1990:2.63,1991:2.63,1992:2.62,1993:2.66,1994:2.67,1995:2.65,1996:2.65,1997:2.64,1998:2.62,1999:2.61,2000:2.62,2001:2.58,2002:2.58,2003:2.57,2004:2.57,2005:2.57,2006:2.57,2007:2.56,2008:2.56,2009:2.57,2010:2.59,2011:2.56,2012:2.55,2013:2.54,2014:2.54,2015:2.54,2016:2.53,2017:2.54,2018:2.53,2019:2.52,2020:2.53,2021:2.54,2022:2.5,2023:2.51,2024:2.51,2025:2.5};
+const YA_M_1824 = {1960:52.4,1970:54.3,1980:54.3,1983:61.4,1984:61.7,1985:59.7,1986:58.8,1987:61.3,1988:60.7,1989:58.1,1990:58.1,1991:60.2,1992:60.4,1993:59.3,1994:59.5,1995:58.4,1996:59.0,1997:59.8,1998:58.6,1999:57.5,2000:57.1,2001:55.1,2002:55.3,2003:54.8,2004:56.5,2005:53.0,2006:53.7,2007:54.7,2008:56.1,2009:56.7,2010:57.3,2011:58.6,2012:60.5,2013:58.6,2014:58.2,2015:58.2,2016:59.1,2017:57.6,2018:57.8,2019:56.3,2020:60.1,2021:60.2,2022:56.7,2023:58.2,2024:58.3,2025:58.8};
+const YA_W_1824 = {1960:34.9,1970:41.3,1980:42.7,1983:47.6,1984:46.8,1985:47.8,1986:46.7,1987:47.5,1988:48.4,1989:47.0,1990:47.7,1991:48.8,1992:48.0,1993:46.9,1994:46.3,1995:46.7,1996:48.0,1997:48.2,1998:47.5,1999:49.0,2000:47.1,2001:45.4,2002:46.0,2003:45.7,2004:46.5,2005:46.0,2006:46.7,2007:47.6,2008:48.2,2009:48.9,2010:49.2,2011:50.3,2012:51.9,2013:52.0,2014:51.5,2015:51.8,2016:52.3,2017:51.9,2018:51.9,2019:52.8,2020:56.3,2021:55.4,2022:54.5,2023:54.6,2024:56.4,2025:56.4};
+const YA_M_2534 = {1960:10.9,1970:9.5,1980:10.5,1983:13.7,1984:13.2,1985:13.3,1986:14.2,1987:14.5,1988:15.0,1989:14.6,1990:15.0,1991:14.9,1992:15.3,1993:15.8,1994:15.6,1995:15.4,1996:16.0,1997:14.5,1998:14.6,1999:13.9,2000:12.9,2001:13.1,2002:13.6,2003:13.5,2004:13.9,2005:13.5,2006:14.3,2007:14.2,2008:15.1,2009:15.6,2010:16.4,2011:17.1,2012:16.9,2013:16.8,2014:17.7,2015:18.2,2016:19.6,2017:19.6,2018:20.8,2019:20.4,2020:22.0,2021:20.3,2022:18.7,2023:19.7,2024:18.7,2025:19.2};
+const YA_W_2534 = {1960:7.4,1970:6.6,1980:7.0,1983:7.6,1984:7.6,1985:8.0,1986:8.0,1987:7.7,1988:8.3,1989:7.9,1990:8.1,1991:8.7,1992:8.8,1993:8.8,1994:8.8,1995:8.5,1996:9.0,1997:8.6,1998:8.5,1999:8.6,2000:8.3,2001:8.1,2002:8.3,2003:7.0,2004:8.0,2005:8.1,2006:8.8,2007:9.3,2008:10.3,2009:9.9,2010:10.5,2011:9.7,2012:10.4,2013:11.1,2014:11.7,2015:12.1,2016:12.5,2017:12.5,2018:12.8,2019:13.1,2020:13.4,2021:13.2,2022:12.4,2023:12.3,2024:12.9,2025:13.6};
+// NCHS provisional rates per 1,000 total population. Divorce rates cover reporting states only.
+const MAR_RATE = {2000:8.2,2001:8.2,2002:8.0,2003:7.7,2004:7.8,2005:7.6,2006:7.5,2007:7.3,2008:7.1,2009:6.8,2010:6.8,2011:6.8,2012:6.8,2013:6.8,2014:6.9,2015:6.9,2016:7.0,2017:6.9,2018:6.5,2019:6.1,2020:5.1,2021:6.0,2022:6.2,2023:6.1,2024:6.3};
+const DIV_RATE = {2000:4.0,2001:4.0,2002:3.9,2003:3.8,2004:3.7,2005:3.6,2006:3.7,2007:3.6,2008:3.5,2009:3.5,2010:3.6,2011:3.6,2012:3.4,2013:3.3,2014:3.2,2015:3.1,2016:3.0,2017:2.9,2018:2.9,2019:2.7,2020:2.3,2021:2.5,2022:2.4,2023:2.4,2024:2.3};
+// NCHS: percent of all births to unmarried women. 1940-99 from NVSR 48(16); 2000-10 from NVSR 61(1) table C; later years from each year's "Births: Final Data" report.
+const NONMAR = {1940:3.8,1941:3.8,1942:3.4,1943:3.3,1944:3.8,1945:4.3,1946:3.8,1947:3.6,1948:3.7,1949:3.7,1950:4.0,1951:3.9,1952:3.9,1953:4.1,1954:4.4,1955:4.5,1956:4.7,1957:4.7,1958:5.0,1959:5.2,1960:5.3,1961:5.6,1962:5.9,1963:6.3,1964:6.9,1965:7.7,1966:8.4,1967:9.0,1968:9.7,1969:10.0,1970:10.7,1971:11.3,1972:12.4,1973:13.0,1974:13.2,1975:14.3,1976:14.8,1977:15.5,1978:16.3,1979:17.1,1980:18.4,1981:18.9,1982:19.4,1983:20.3,1984:21.0,1985:22.0,1986:23.4,1987:24.5,1988:25.7,1989:27.1,1990:28.0,1991:29.5,1992:30.1,1993:31.0,1994:32.6,1995:32.2,1996:32.4,1997:32.4,1998:32.8,1999:33.0,2000:33.2,2001:33.5,2002:34.0,2003:34.6,2004:35.8,2005:36.9,2006:38.5,2007:39.7,2008:40.6,2009:41.0,2010:40.8,2011:40.7,2012:40.7,2013:40.6,2014:40.2,2015:40.3,2016:39.8,2017:39.8,2018:39.6,2019:40.0,2020:40.5,2021:40.0,2022:39.8,2023:40.0,2024:39.5};
+/* DATA:END */
+
+const $ = id => document.getElementById(id);
+const years = o => Object.keys(o).map(Number).sort((a, b) => a - b);
+const last = o => { const y = years(o).pop(); return {y, v: o[y]}; };
+const lowest = o => { const m = Math.min(...Object.values(o)); return {v: m, ys: years(o).filter(y => o[y] === m)}; };
+const highest = o => { const m = Math.max(...Object.values(o)); return {v: m, ys: years(o).filter(y => o[y] === m)}; };
+const f1 = v => v.toFixed(1);
+const pct = v => f1(v) + "%";
+const list = a => a.length < 2 ? a.join("") : a.slice(0, -1).join(", ") + (a.length > 2 ? "," : "") + " and " + a[a.length - 1];
+// first year after `from` when the series is higher than its `from` value
+const passed = (o, from) => years(o).find(y => y > from && o[y] > o[from]);
+
+const mLow = lowest(AGE_M), kNow = last(KID_TWO), nHigh = highest(NONMAR);
+
+/* ---------- Trends ---------- */
+const CENSUS = "U.S. Census Bureau";
+const TRENDS = [
+  {id: "marry", btn: "Age at marriage", title: "Median age at first marriage", sub: "Half of people marrying for the first time were younger than this age, and half were older.",
+    series: [{name: "Men", d: AGE_M}, {name: "Women", d: AGE_W}], min: 18, max: 32, ticks: [18, 20, 22, 24, 26, 28, 30, 32], fmt: f1, unit: "years", start: 1956,
+    notice: () => `The 1950s were the exception, not the starting point. Men married youngest in ${list(mLow.ys)} (${f1(mLow.v)}) and women in ${list(lowest(AGE_W).ys)} (${f1(lowest(AGE_W).v)}). In 1890, the ages were ${f1(AGE_M[1890])} and ${f1(AGE_W[1890])}.`,
+    caveat: "1890–1940 figures come from the census, taken every 10 years. Starting in 2019, the estimates include same-sex married couples. The vertical axis starts at 18, not 0."},
+  {id: "kids", btn: "Children", title: "Who children live with", sub: "Percent of children under 18.",
+    series: [{name: "Two parents", d: KID_TWO}, {name: "Mother only", d: KID_MOM}, {name: "Father only", d: KID_DAD}, {name: "No parent", d: KID_NONE}], min: 0, max: 100, ticks: [0, 25, 50, 75, 100], fmt: pct, unit: "", start: 1960,
+    notice: () => `Most of the change happened between 1960 and the mid-1990s. The share living with two parents was ${pct(KID_TWO[1995])} in 1995 and ${pct(kNow.v)} in ${kNow.y}. The share living with only their mother peaked at ${pct(highest(KID_MOM).v)} in ${highest(KID_MOM).ys[0]}.`,
+    caveat: "“Two parents” includes biological, step, and adoptive parents. Starting in 2007, the survey could identify two parents who live together but aren’t married, which raised the two-parent share by about 3 points that year. No figures were published for 1961–1967."},
+  {id: "house", btn: "Households", title: "Married couples and people living alone", sub: "Percent of all households.",
+    series: [{name: "Married couple", d: HH_MARRIED}, {name: "One person", d: HH_ALONE}], min: 0, max: 100, ticks: [0, 25, 50, 75, 100], fmt: pct, unit: "", start: 1960,
+    notice: () => `Married couples headed ${pct(highest(HH_MARRIED).v)} of households in ${highest(HH_MARRIED).ys[0]} and ${pct(last(HH_MARRIED).v)} in ${last(HH_MARRIED).y}. Over the same years, living alone went from uncommon to more than one in four households.`,
+    caveat: "A household is everyone who lives in one housing unit. Married-couple households may or may not include children. The one-person series starts in 1960."},
+  {id: "size", btn: "Household size", title: "Average household size", sub: "Average number of people per household.",
+    series: [{name: "People per household", d: HH_SIZE}], min: 0, max: 4, ticks: [0, 1, 2, 3, 4], fmt: v => v.toFixed(2), unit: "", start: 1960,
+    notice: () => `The average household had ${HH_SIZE[1940].toFixed(2)} people in 1940 and ${last(HH_SIZE).v.toFixed(2)} in ${last(HH_SIZE).y}. Most of the drop came before 1990. Fewer children per family, more people living alone, and longer lives after children leave home all play a part.`,
+    caveat: "The 1940 figure comes from the census."},
+  {id: "births", btn: "Births", title: "Births to unmarried women", sub: "Percent of all births.",
+    series: [{name: "Births to unmarried women", d: NONMAR}], min: 0, max: 50, ticks: [0, 10, 20, 30, 40, 50], fmt: pct, unit: "", start: 2009,
+    notice: () => `After rising for almost 70 years, the share peaked at ${pct(nHigh.v)} in ${nHigh.ys[0]} and has been close to 40% ever since.`,
+    caveat: "“Unmarried” describes the mother’s legal marital status when the baby was born. Many unmarried mothers live with the baby’s other parent, which these numbers don’t show."},
+  {id: "divorce", btn: "Divorce", title: "Marriage and divorce rates", sub: "Marriages and divorces per 1,000 people.",
+    series: [{name: "Marriages", d: MAR_RATE}, {name: "Divorces", d: DIV_RATE}], min: 0, max: 10, ticks: [0, 2, 4, 6, 8, 10], fmt: f1, unit: "", start: 2000,
+    notice: () => `Both rates fell. The marriage rate dropped sharply in 2020, the first year of the COVID-19 pandemic, and then partly recovered.`,
+    caveat: "This is a different measure from the one in the divorce question above, which counts divorces per 1,000 married women. These rates are per 1,000 people of all ages, so they also shift when the population gets older or younger. Divorce figures leave out several states that don’t report them, including California."},
+  {id: "home", btn: "Young adults", title: "Young adults living with a parent", sub: "Percent of each group living in a parent’s home.",
+    series: [{name: "Men 18–24", d: YA_M_1824}, {name: "Women 18–24", d: YA_W_1824}, {name: "Men 25–34", d: YA_M_2534}, {name: "Women 25–34", d: YA_W_2534}], min: 0, max: 100, ticks: [0, 25, 50, 75, 100], fmt: pct, unit: "", start: 1960,
+    notice: () => `Living with parents isn’t new for 18-to-24-year-olds: a majority of men that age did so in 1960, too. The biggest change is among women ages 18–24, from ${pct(YA_W_1824[1960])} in 1960 to ${pct(last(YA_W_1824).v)} in ${last(YA_W_1824).y}, as women married later.`,
+    caveat: "Unmarried college students living in dorms are counted as living in their parents’ home, so rising college enrollment raises these numbers. The 1960, 1970, and 1980 figures come from the census; yearly figures start in 1983."}
+];
+const COLORS = ["var(--s1)", "var(--s2)", "var(--s3)", "var(--s4)"];
+const DASH = ["", "", "7 4", "2 4"];   // a second cue besides color when there are 3 or 4 lines
+
+// On narrow screens the chart is drawn smaller so its text stays readable, and the legend replaces the end-of-line labels.
+let W, L, R, PH, H, NARROW;
+const TOP = 14;
+function sizeChart() {
+  NARROW = window.innerWidth < 600;
+  W = NARROW ? 430 : 660; L = NARROW ? 46 : 52; R = NARROW ? 16 : 138; PH = NARROW ? 250 : 300; H = TOP + PH + 34;
+}
+sizeChart();
+let T = null, X0 = 0, X1 = 0, allYears = [];
+const x = y => L + (y - X0) * (W - L - R) / (X1 - X0);
+const yy = v => TOP + PH - (v - T.min) / (T.max - T.min) * PH;
+
+function linePath(d) {
+  return years(d).map((y, i) => (i ? "L" : "M") + x(y).toFixed(1) + " " + yy(d[y]).toFixed(1)).join(" ");
+}
+function loneDots(d, color) {
+  // dots only where a year has no neighbor on at least one side (census years, gaps)
+  const ys = years(d);
+  return ys.filter((y, i) => (i === 0 || y - ys[i - 1] > 1) || (i < ys.length - 1 && ys[i + 1] - y > 1))
+    .map(y => `<circle cx="${x(y).toFixed(1)}" cy="${yy(d[y]).toFixed(1)}" r="3.4" fill="${color}" stroke="var(--surface)" stroke-width="1.5"/>`).join("");
+}
+function endLabels() {
+  // direct labels at the right end, nudged apart so they don't overlap
+  const items = T.series.map((s, i) => ({i, name: s.name, y: yy(last(s.d).v)})).sort((a, b) => a.y - b.y);
+  const GAP = 19;
+  for (let k = 1; k < items.length; k++) if (items[k].y - items[k - 1].y < GAP) items[k].y = items[k - 1].y + GAP;
+  const over = items.length ? items[items.length - 1].y - (TOP + PH + 4) : 0;
+  if (over > 0) { items.forEach(it => it.y -= over); for (let k = items.length - 2; k >= 0; k--) if (items[k + 1].y - items[k].y < GAP) items[k].y = items[k + 1].y - GAP; }
+  return items.map(it => `<text class="end" x="${x(X1) + 10}" y="${(it.y + 5).toFixed(1)}">${it.name}</text>`).join("");
+}
+function describe() {
+  return T.title + ", " + X0 + " to " + X1 + ". " + T.series.map(s => { const ys = years(s.d), a = ys[0], b = last(s.d); return `${s.name}: ${T.fmt(s.d[a])} in ${a}, ${T.fmt(b.v)} in ${b.y}.`; }).join(" ");
+}
+function drawChart() {
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${describe().replace(/"/g, "&quot;")}">`;
+  T.ticks.forEach(v => s += `<line x1="${L}" x2="${x(X1)}" y1="${yy(v)}" y2="${yy(v)}" stroke="var(--line)"/><text x="${L - 8}" y="${yy(v) + 5}" text-anchor="end">${v}${T.fmt === pct ? "%" : ""}</text>`);
+  const span = X1 - X0, stepT = span > 80 ? 20 : span > 40 ? 10 : 5;
+  for (let y = Math.ceil(X0 / stepT) * stepT; y <= X1 - span * (NARROW ? .14 : .09); y += stepT) s += `<text x="${x(y)}" y="${H - 8}" text-anchor="middle">${y}</text>`;
+  s += `<text x="${NARROW ? W - 2 : x(X1)}" y="${H - 8}" text-anchor="${NARROW ? "end" : "middle"}">${X1}</text>`;
+  T.series.forEach((se, i) => {
+    s += `<path d="${linePath(se.d)}" fill="none" stroke="${COLORS[i]}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"${T.series.length > 2 && DASH[i] ? ` stroke-dasharray="${DASH[i]}"` : ""}/>` + loneDots(se.d, COLORS[i]);
+  });
+  if (!NARROW) s += endLabels();
+  s += `<line id="cursor" x1="0" x2="0" y1="${TOP}" y2="${TOP + PH}" stroke="var(--ink)" stroke-width="1.2" opacity=".55"/><g id="markers"></g>`;
+  s += `<rect x="${L}" y="${TOP}" width="${x(X1) - L}" height="${PH}" fill="transparent"/></svg>`;
+  $("chart").innerHTML = s;
+  const svg = $("chart").querySelector("svg");
+  const pick = ev => {
+    const pt = svg.createSVGPoint(); pt.x = ev.clientX; pt.y = ev.clientY;
+    const p = pt.matrixTransform(svg.getScreenCTM().inverse());
+    setYear(X0 + (p.x - L) / (W - L - R) * (X1 - X0));
+  };
+  svg.addEventListener("pointermove", pick);
+  svg.addEventListener("pointerdown", pick);
+}
+function setYear(target) {
+  // snap to the nearest year that has data
+  const y = allYears.reduce((best, c) => Math.abs(c - target) < Math.abs(best - target) ? c : best, allYears[0]);
+  $("yr").value = y;
+  const c = $("cursor"); c.setAttribute("x1", x(y)); c.setAttribute("x2", x(y));
+  $("markers").innerHTML = T.series.map((s, i) => s.d[y] == null ? "" : `<circle cx="${x(y)}" cy="${yy(s.d[y])}" r="5.5" fill="${COLORS[i]}" stroke="var(--surface)" stroke-width="2"/>`).join("");
+  $("readout").innerHTML = `<div><div class="num">${y}</div><div class="cap">Year</div></div>` +
+    T.series.map((s, i) => `<div><div class="num"${s.d[y] == null ? ' style="color:var(--muted)"' : ""}>${s.d[y] == null ? "—" : T.fmt(s.d[y])}</div><div class="cap"><span class="sw" style="background:${COLORS[i]}"></span>${s.name}</div></div>`).join("");
+}
+function drawTable() {
+  let t = "<thead><tr><th>Year</th>" + T.series.map(s => `<th>${s.name}</th>`).join("") + "</tr></thead><tbody>";
+  allYears.forEach(y => t += `<tr><td>${y}</td>` + T.series.map(s => `<td>${s.d[y] == null ? "—" : T.fmt(s.d[y])}</td>`).join("") + "</tr>");
+  $("tbl").innerHTML = t + "</tbody>";
+}
+function legendLine(i, n) {
+  return `<svg width="26" height="10"><line x1="1" y1="5" x2="25" y2="5" stroke="${COLORS[i]}" stroke-width="3" stroke-linecap="round"${n > 2 && DASH[i] ? ` stroke-dasharray="${DASH[i]}"` : ""}/></svg>`;
+}
+function showTrend(id) {
+  T = TRENDS.find(t => t.id === id);
+  allYears = [...new Set(T.series.flatMap(s => years(s.d)))].sort((a, b) => a - b);
+  X0 = allYears[0]; X1 = allYears[allYears.length - 1];
+  document.querySelectorAll("#trends button").forEach(b => b.setAttribute("aria-pressed", b.dataset.id === id));
+  $("tTitle").textContent = T.title; $("tSub").textContent = T.sub;
+  $("legend").innerHTML = T.series.length > 1 || NARROW ? T.series.map((s, i) => `<span>${legendLine(i, T.series.length)}${s.name}</span>`).join("") : "";
+  $("tNotice").innerHTML = "<strong>What to notice:</strong> " + T.notice();
+  $("tCaveat").textContent = "Keep in mind: " + T.caveat;
+  $("yr").min = X0; $("yr").max = X1;
+  drawChart(); drawTable(); setYear(T.start);
+}
+$("trends").innerHTML = TRENDS.map(t => `<button data-id="${t.id}" aria-pressed="false">${t.btn}</button>`).join("");
+$("trends").addEventListener("click", e => { const b = e.target.closest("button"); if (b) showTrend(b.dataset.id); });
+$("yr").addEventListener("input", e => setYear(+e.target.value));
+window.addEventListener("resize", () => { const was = NARROW; sizeChart(); if (was !== NARROW) { const y = +$("yr").value; showTrend(T.id); setYear(y); } });
+
+showTrend("marry");
+})();
 </script>
 </body>
 </html>
