@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How Have U.S. Families Changed?</title>
+<meta name="description" content="Guess first, then explore up to 135 years of data on marriage, divorce, children’s living arrangements, living alone, and more. Some of the answers may surprise you.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://gsharpokie.github.io/familytrends/">
+<meta property="og:title" content="How Have U.S. Families Changed?">
+<meta property="og:description" content="Guess first, then explore up to 135 years of data on marriage, divorce, children’s living arrangements, living alone, and more. Some of the answers may surprise you.">
+<meta property="og:image" content="https://gsharpokie.github.io/familytrends/preview.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="How Have U.S. Families Changed? A line chart of the median age at first marriage for men and women from 1890 to 2025, dipping in the 1950s and rising since.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:creator" content="@gsharpokie">
+<meta name="twitter:title" content="How Have U.S. Families Changed?">
+<meta name="twitter:description" content="Guess first, then explore up to 135 years of data on marriage, divorce, children’s living arrangements, living alone, and more.">
+<meta name="twitter:image" content="https://gsharpokie.github.io/familytrends/preview.png">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%2324212b'/%3E%3Cpath d='M5 12 L11 17 L17 17 L27 7' fill='none' stroke='%236aaee8' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M5 20 L11 24 L17 24 L27 15' fill='none' stroke='%23e58a55' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+/* Layout: one column. Five guess-first questions, then one chart at a time chosen from a row of
+   trend buttons, then a 1960-vs-now table, context, and discussion. */
+:root {
+  --paper: #f5f2ec;
+  --surface: #ffffff;
+  --ink: #24212b;
+  --muted: #5f5b66;
+  --line: #dcd7cd;
+  --s1: #2a6fb0; --s2: #c2571a; --s3: #2f8f6b; --s4: #8a5fb5;
+  --focus: #2a6fb0;
+  --display: "Public Sans", "Segoe UI", system-ui, sans-serif;
+  --body: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #15171c; --surface: #1c2229; --ink: #eeedf0; --muted: #a9a7b0; --line: #363b44;
+    --s1: #4f95d6; --s2: #d6703a; --s3: #3faa80; --s4: #a182d2; --focus: #6aaee8; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #15171c; --surface: #1c2229; --ink: #eeedf0; --muted: #a9a7b0; --line: #363b44;
+  --s1: #4f95d6; --s2: #d6703a; --s3: #3faa80; --s4: #a182d2; --focus: #6aaee8; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 1.05rem; line-height: 1.55; }
+.wrap { max-width: 48rem; margin: 0 auto; padding: 2rem 1rem 3rem; display: grid; gap: 1.6rem; }
+header { display: grid; gap: .45rem; }
+.kicker { font-size: .85rem; color: var(--muted); }
+.kicker a, footer a, .notes a, .prose a { color: var(--ink); }
+h1 { font-family: var(--display); font-weight: 900; font-size: clamp(2.2rem, 7.5vw, 3.4rem); line-height: 1; margin: 0; letter-spacing: -.02em; text-wrap: balance; }
+h2 { font-family: var(--display); font-weight: 800; font-size: 1.45rem; line-height: 1.15; margin: 0; text-wrap: balance; }
+h3 { font-family: var(--display); font-weight: 700; font-size: 1.1rem; margin: 0; }
+.lede { margin: 0; max-width: 62ch; color: var(--muted); }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 1.4rem; display: grid; gap: .9rem; min-width: 0; }
+.step { font-size: .8rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.q { font-size: 1.15rem; font-weight: 600; margin: 0; }
+.choices, .trends { display: flex; flex-wrap: wrap; gap: .5rem; }
+.choices button, .actions button, .trends button { font: inherit; font-weight: 600; padding: .6rem 1rem; border-radius: 10px; border: 1px solid var(--ink); background: transparent; color: var(--ink); cursor: pointer; }
+.trends button { padding: .45rem .8rem; font-size: .95rem; }
+.choices button[aria-pressed="true"], .trends button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.choices button:disabled { cursor: default; }
+.actions button.primary { background: var(--ink); color: var(--paper); }
+.actions button:disabled { opacity: .5; cursor: default; }
+button:focus-visible, input:focus-visible, a:focus-visible, summary:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.guess-row { display: flex; align-items: center; gap: 1rem; }
+.guess-row input { flex: 1; accent-color: var(--ink); height: 2rem; min-width: 0; }
+.guess-val { font-family: var(--display); font-weight: 900; font-size: 2rem; min-width: 4.5ch; text-align: right; font-variant-numeric: tabular-nums; }
+.guess-label { font-size: .85rem; color: var(--muted); }
+.answer { border-left: 4px solid var(--s1); padding: .2rem 0 .2rem .9rem; margin: 0; }
+.answer strong { font-variant-numeric: tabular-nums; }
+.hidden { display: none !important; }
+.linkish { font: inherit; background: none; border: none; padding: 0; color: var(--ink); text-decoration: underline; cursor: pointer; }
+.sub { margin: 0; color: var(--muted); font-size: .95rem; }
+.legend:empty { display: none; }
+.legend { display: flex; flex-wrap: wrap; gap: .3rem 1rem; font-size: .9rem; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: .4rem; }
+.chart svg { width: 100%; height: auto; display: block; overflow: visible; touch-action: pan-y; }
+.chart text { fill: var(--muted); font-family: var(--body); font-size: 16px; font-variant-numeric: tabular-nums; }
+.chart text.end { fill: var(--ink); font-size: 15px; }
+.readout { display: grid; grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr)); gap: .6rem; }
+.readout > div { border: 1px solid var(--line); border-radius: 10px; padding: .55rem .75rem; }
+.readout .num { font-family: var(--display); font-weight: 800; font-size: 1.5rem; font-variant-numeric: tabular-nums; line-height: 1.1; }
+.readout .cap { font-size: .8rem; color: var(--muted); display: flex; align-items: center; gap: .35rem; }
+.sw { display: inline-block; width: .7rem; height: .7rem; border-radius: 3px; flex: none; }
+.yearpick { display: flex; align-items: center; gap: .8rem; font-size: .9rem; color: var(--muted); }
+.yearpick input { flex: 1; accent-color: var(--ink); min-width: 0; }
+.notice { margin: 0; border-left: 4px solid var(--line); padding: .1rem 0 .1rem .9rem; }
+.caveat { margin: 0; font-size: .9rem; color: var(--muted); }
+.prose p, .prose ul, .prose ol { margin: 0 0 .7rem; max-width: 64ch; }
+.prose li { margin-bottom: .4rem; }
+.prose p:last-child { margin-bottom: 0; }
+details { font-size: .9rem; }
+summary { cursor: pointer; color: var(--muted); }
+table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; margin-top: .5rem; }
+th, td { text-align: right; padding: .3rem .5rem; border-bottom: 1px solid var(--line); }
+th:first-child, td:first-child { text-align: left; }
+.tablewrap { overflow-x: auto; }
+#thenNow { font-size: .98rem; }
+.notes { font-size: .88rem; color: var(--muted); }
+footer { font-size: .85rem; color: var(--muted); }
+@media (max-width: 560px) { .card { padding: 1.1rem; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="kicker">By Gwen Sharp · <a href="https://x.com/gsharpokie">@gsharpokie</a></div>
+    <h1>How Have U.S. Families Changed?</h1>
+    <p class="lede">People have strong opinions about what’s happened to American families, but fewer of us have seen the numbers. Make five guesses, then explore the trends yourself.</p>
+  </header>
+
+  <section class="card" id="g1" aria-live="polite">
+    <div class="step">Guess 1 of 5</div>
+    <p class="q">In 2025, the typical man marrying for the first time was almost 31. How old was the typical man at his first marriage in 1890?</p>
+    <label for="s1" class="guess-label">Your guess</label>
+    <div class="guess-row"><input type="range" id="s1" min="16" max="35" value="25" step="1"><output id="v1" class="guess-val" for="s1">25</output></div>
+    <div class="actions"><button class="primary" id="b1">Lock in my guess</button></div>
+    <p class="answer hidden" id="a1"></p>
+  </section>
+
+  <section class="card" id="g2" aria-live="polite">
+    <div class="step">Guess 2 of 5</div>
+    <p class="q">Since 2000, has the U.S. divorce rate increased, stayed about the same, or decreased?</p>
+    <div class="choices" id="c2">
+      <button data-v="up">Increased</button><button data-v="same">About the same</button><button data-v="down">Decreased</button>
+    </div>
+    <p class="answer hidden" id="a2"></p>
+  </section>
+
+  <section class="card" id="g3" aria-live="polite">
+    <div class="step">Guess 3 of 5</div>
+    <p class="q">What percentage of U.S. children under 18 live with two parents?</p>
+    <label for="s3" class="guess-label">Your guess</label>
+    <div class="guess-row"><input type="range" id="s3" min="0" max="100" value="50"><output id="v3" class="guess-val" for="s3">50%</output></div>
+    <div class="actions"><button class="primary" id="b3">Lock in my guess</button></div>
+    <p class="answer hidden" id="a3"></p>
+  </section>
+
+  <section class="card" id="g4" aria-live="polite">
+    <div class="step">Guess 4 of 5</div>
+    <p class="q">What percentage of U.S. households are one person living alone?</p>
+    <label for="s4" class="guess-label">Your guess</label>
+    <div class="guess-row"><input type="range" id="s4" min="0" max="100" value="50"><output id="v4" class="guess-val" for="s4">50%</output></div>
+    <div class="actions"><button class="primary" id="b4">Lock in my guess</button></div>
+    <p class="answer hidden" id="a4"></p>
+  </section>
+
+  <section class="card" id="g5" aria-live="polite">
+    <div class="step">Guess 5 of 5</div>
+    <p class="q">The share of babies born to unmarried mothers rose for decades. Since 2009, has it kept rising, leveled off, or fallen sharply?</p>
+    <div class="choices" id="c5">
+      <button data-v="up">Kept rising</button><button data-v="flat">Leveled off</button><button data-v="down">Fallen sharply</button>
+    </div>
+    <p class="answer hidden" id="a5"></p>
+  </section>
+
+  <p class="lede" id="gate">The charts appear after your fifth guess. <button class="linkish" id="skip">Skip the guesses</button></p>
+
+  <section class="card after hidden" id="charts" aria-labelledby="chartHead">
+    <h2 id="chartHead">Explore the trends</h2>
+    <div class="trends" id="trends" role="group" aria-label="Choose a trend"></div>
+    <div>
+      <h3 id="tTitle"></h3>
+      <p class="sub" id="tSub"></p>
+    </div>
+    <div class="legend" id="legend" aria-hidden="true"></div>
+    <div class="chart" id="chart"></div>
+    <div class="yearpick"><label for="yr">Pick a year</label><input type="range" id="yr" step="1"></div>
+    <div class="readout" id="readout" aria-live="polite"></div>
+    <p class="notice" id="tNotice"></p>
+    <p class="caveat" id="tCaveat"></p>
+    <details>
+      <summary>Show the numbers as a table</summary>
+      <div class="tablewrap"><table id="tbl"></table></div>
+    </details>
+  </section>
+
+  <section class="card after hidden" aria-labelledby="tnHead">
+    <h2 id="tnHead">1960 and now</h2>
+    <p class="sub">People often treat the years around 1960 as the starting point for “how families used to be.” Here’s how that year compares with the most recent numbers.</p>
+    <div class="tablewrap"><table id="thenNow"></table></div>
+  </section>
+
+  <section class="card prose after hidden" aria-labelledby="ctx">
+    <h2 id="ctx">The fuller picture</h2>
+    <p id="p1"></p>
+    <p id="p2"></p>
+    <p id="p3"></p>
+    <p><strong>The numbers describe change. They don’t say whether it’s good or bad.</strong> Researchers disagree about what these trends mean for adults and children, and so does the public. In a 2023 Pew Research Center survey, 40% of Americans said they were pessimistic about the future of marriage and the family, and 25% were optimistic.</p>
+    <h3>Talk about it</h3>
+    <ol>
+      <li>Which answer surprised you most? Where did your guess come from: your own family, news, social media, TV?</li>
+      <li>Many people think of the 1950s as the “traditional” family. What does the marriage-age chart suggest about how typical that decade was? What was going on in the 1950s that might explain it?</li>
+      <li>The divorce rate has fallen, and so has the marriage rate. How could those two facts be connected? Who is getting married now, compared with a few decades ago?</li>
+      <li>The Census Bureau counts stepparents, adoptive parents, and (since 2007) unmarried parents who live together as “two parents.” How would the picture change if it counted only married biological parents? Which definition is the right one, and for what purpose?</li>
+      <li>More people live alone than ever. Is that a sign of isolation, independence, wealth, longer lives, or something else? What evidence would help you decide?</li>
+      <li>Pick one trend. What changes in the economy, laws, technology, or beliefs might explain it? How could a researcher test your explanation?</li>
+    </ol>
+  </section>
+
+  <section class="notes prose" aria-labelledby="about">
+    <h3 id="about">About the data</h3>
+    <p><strong>Marriage age, children, households, and young adults:</strong> the U.S. Census Bureau’s historical tables on families and living arrangements, based on the Current Population Survey’s Annual Social and Economic Supplement (through 2025, released December 2025) and on earlier censuses. Percentages are calculated from the counts in those tables. In years when the Census Bureau published both an original and a revised estimate, the revised one is shown. Dots mark years that stand alone, such as census years; the lines connect across the gaps.</p>
+    <p><strong>Divorce and marriage rates:</strong> the National Center for Health Statistics’ provisional counts per 1,000 people. The divorce figures leave out several states that don’t report divorces (in 2024: California, Hawaii, Indiana, Minnesota, and New Mexico), and the rate is calculated only for the states that do.</p>
+    <p><strong>Births to unmarried women:</strong> the National Center for Health Statistics’ birth certificate data, 1940–2024.</p>
+    <p><strong>Sources:</strong> U.S. Census Bureau, <a href="https://www.census.gov/data/tables/time-series/demo/families/marital.html">Table MS-2</a> (median age at first marriage), <a href="https://www.census.gov/data/tables/time-series/demo/families/children.html">Table CH-1</a> (living arrangements of children), <a href="https://www.census.gov/data/tables/time-series/demo/families/households.html">Tables HH-1, HH-4, and HH-6</a> (households by type and size), and <a href="https://www.census.gov/data/tables/time-series/demo/families/adults.html">Table AD-1</a> (young adults living at home). National Center for Health Statistics, <a href="https://www.cdc.gov/nchs/data/dvs/marriage-divorce/national-marriage-divorce-rates-00-24.pdf">Provisional Number of Marriages and Marriage Rate and Divorces and Rate: United States, 2000–2024</a>; <a href="https://www.cdc.gov/nchs/data/nvsr/nvsr48/nvs48_16.pdf">“Nonmarital Childbearing in the United States, 1940–99”</a> (<em>National Vital Statistics Reports</em> 48(16), 2000); and the annual “Births: Final Data” reports for 2010 through <a href="https://www.cdc.gov/nchs/data/nvsr/nvsr75/nvsr75-02.pdf">2024</a> (<em>National Vital Statistics Reports</em> 75(2), 2026). Pew Research Center, <a href="https://www.pewresearch.org/social-trends/2023/09/14/public-has-mixed-views-on-the-modern-american-family/">“Public Has Mixed Views on the Modern American Family”</a> (2023).</p>
+    <h3>How to cite this page</h3>
+    <p>Sharp, Gwen. 2026. “How Have U.S. Families Changed?” <a href="https://gsharpokie.github.io/familytrends/">https://gsharpokie.github.io/familytrends/</a></p>
+    <p>Spot an error? <a href="https://github.com/gsharpokie/familytrends/issues/new">Suggest a correction</a> (needs a free GitHub account).</p>
+  </section>
+
+  <footer>Created by Gwen Sharp (<a href="https://x.com/gsharpokie">@gsharpokie</a>). Licensed under <a href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC 4.0</a>.</footer>
+</div>
+
+<script>
+/* DATA:START
+   Census series below are generated by tools/build_data.py from the Census Bureau's historical tables.
+   Each is {year: value}. Years that aren't listed weren't published. */
+const AGE_M = {1890:26.1,1900:25.9,1910:25.1,1920:24.6,1930:24.3,1940:24.3,1947:23.7,1948:23.3,1949:22.7,1950:22.8,1951:22.9,1952:23.0,1953:22.8,1954:23.0,1955:22.6,1956:22.5,1957:22.6,1958:22.6,1959:22.5,1960:22.8,1961:22.8,1962:22.7,1963:22.8,1964:23.1,1965:22.8,1966:22.8,1967:23.1,1968:23.1,1969:23.2,1970:23.2,1971:23.1,1972:23.3,1973:23.2,1974:23.1,1975:23.5,1976:23.8,1977:24.0,1978:24.2,1979:24.4,1980:24.7,1981:24.8,1982:25.2,1983:25.4,1984:25.4,1985:25.5,1986:25.7,1987:25.8,1988:25.9,1989:26.2,1990:26.1,1991:26.3,1992:26.5,1993:26.5,1994:26.7,1995:26.9,1996:27.1,1997:26.8,1998:26.7,1999:26.9,2000:26.8,2001:26.9,2002:26.9,2003:27.1,2004:27.4,2005:27.1,2006:27.5,2007:27.5,2008:27.6,2009:28.1,2010:28.2,2011:28.4,2012:28.6,2013:29.0,2014:29.3,2015:29.2,2016:29.5,2017:29.5,2018:29.8,2019:29.8,2020:30.5,2021:30.3,2022:30.1,2023:30.2,2024:30.2,2025:30.8};
+const AGE_W = {1890:22.0,1900:21.9,1910:21.6,1920:21.2,1930:21.3,1940:21.5,1947:20.5,1948:20.4,1949:20.3,1950:20.3,1951:20.4,1952:20.2,1953:20.2,1954:20.3,1955:20.2,1956:20.1,1957:20.3,1958:20.2,1959:20.2,1960:20.3,1961:20.3,1962:20.3,1963:20.5,1964:20.5,1965:20.6,1966:20.5,1967:20.6,1968:20.8,1969:20.8,1970:20.8,1971:20.9,1972:20.9,1973:21.0,1974:21.1,1975:21.1,1976:21.3,1977:21.6,1978:21.8,1979:22.1,1980:22.0,1981:22.3,1982:22.5,1983:22.8,1984:23.0,1985:23.3,1986:23.1,1987:23.6,1988:23.6,1989:23.8,1990:23.9,1991:24.1,1992:24.4,1993:24.5,1994:24.5,1995:24.5,1996:24.8,1997:25.0,1998:25.0,1999:25.1,2000:25.1,2001:25.1,2002:25.3,2003:25.3,2004:25.3,2005:25.3,2006:25.5,2007:25.6,2008:25.9,2009:25.9,2010:26.1,2011:26.4,2012:26.6,2013:26.6,2014:27.0,2015:27.1,2016:27.4,2017:27.4,2018:27.8,2019:28.0,2020:28.1,2021:28.6,2022:28.2,2023:28.4,2024:28.6,2025:28.4};
+const KID_TWO = {1960:87.7,1968:85.4,1969:85.1,1970:85.2,1971:83.4,1972:83.1,1973:82.1,1974:81.4,1975:80.3,1976:80.0,1977:79.2,1978:77.7,1979:77.4,1980:76.7,1981:76.4,1982:75.0,1983:74.9,1984:74.9,1985:73.9,1986:73.9,1987:73.1,1988:72.7,1989:73.1,1990:72.5,1991:71.7,1992:70.7,1993:70.5,1994:69.2,1995:68.7,1996:68.0,1997:68.2,1998:68.1,1999:68.0,2000:69.1,2001:69.1,2002:68.7,2003:68.4,2004:67.8,2005:67.3,2006:67.4,2007:70.7,2008:69.9,2009:69.8,2010:69.4,2011:68.7,2012:68.1,2013:68.5,2014:68.7,2015:69.2,2016:68.7,2017:68.9,2018:69.1,2019:70.1,2020:70.4,2021:69.7,2022:70.2,2023:71.1,2024:71.2,2025:70.4};
+const KID_MOM = {1960:8.0,1968:10.7,1969:11.0,1970:10.8,1971:12.4,1972:12.8,1973:13.6,1974:14.4,1975:15.5,1976:15.8,1977:16.3,1978:17.0,1979:16.9,1980:18.0,1981:18.1,1982:20.0,1983:20.5,1984:20.4,1985:20.9,1986:21.0,1987:21.3,1988:21.4,1989:21.5,1990:21.6,1991:22.4,1992:23.3,1993:23.3,1994:23.5,1995:23.5,1996:24.0,1997:23.6,1998:23.3,1999:23.4,2000:22.4,2001:22.4,2002:22.8,2003:23.0,2004:23.3,2005:23.4,2006:23.3,2007:22.6,2008:22.8,2009:22.8,2010:23.1,2011:23.8,2012:24.4,2013:23.7,2014:23.6,2015:23.1,2016:23.4,2017:22.7,2018:22.2,2019:21.4,2020:21.0,2021:21.5,2022:21.5,2023:20.9,2024:20.2,2025:21.0};
+const KID_DAD = {1960:1.1,1968:1.1,1969:1.1,1970:1.1,1971:1.1,1972:1.2,1973:1.2,1974:1.3,1975:1.5,1976:1.2,1977:1.4,1978:1.6,1979:1.6,1980:1.7,1981:1.9,1982:1.9,1983:2.0,1984:2.2,1985:2.5,1986:2.5,1987:2.6,1988:2.9,1989:2.8,1990:3.1,1991:3.1,1992:3.3,1993:3.4,1994:3.2,1995:3.5,1996:3.9,1997:4.3,1998:4.4,1999:4.3,2000:4.2,2001:4.4,2002:4.6,2003:4.6,2004:4.6,2005:4.8,2006:4.7,2007:3.2,2008:3.5,2009:3.4,2010:3.4,2011:3.5,2012:4.0,2013:4.1,2014:3.9,2015:3.7,2016:4.1,2017:4.3,2018:4.4,2019:4.4,2020:4.5,2021:4.9,2022:4.7,2023:4.2,2024:4.6,2025:4.6};
+const KID_NONE = {1960:3.2,1968:2.8,1969:2.8,1970:2.9,1971:3.1,1972:2.9,1973:3.0,1974:3.0,1975:2.7,1976:2.9,1977:3.1,1978:3.7,1979:4.1,1980:3.7,1981:3.6,1982:3.1,1983:2.6,1984:2.5,1985:2.7,1986:2.6,1987:2.9,1988:3.0,1989:2.5,1990:2.8,1991:2.8,1992:2.7,1993:2.8,1994:4.1,1995:4.3,1996:4.1,1997:3.9,1998:4.1,1999:4.2,2000:4.2,2001:4.1,2002:4.0,2003:4.1,2004:4.3,2005:4.5,2006:4.6,2007:3.5,2008:3.8,2009:4.0,2010:4.1,2011:4.0,2012:3.6,2013:3.7,2014:3.8,2015:3.9,2016:3.8,2017:4.0,2018:4.3,2019:4.0,2020:4.1,2021:3.9,2022:3.6,2023:3.8,2024:4.1,2025:4.0};
+const HH_MARRIED = {1940:76.0,1947:78.3,1948:78.7,1949:78.8,1950:78.2,1951:77.0,1952:77.2,1953:76.7,1954:76.5,1955:75.7,1956:75.8,1957:75.9,1958:75.1,1959:74.7,1960:74.3,1961:74.0,1962:73.8,1963:74.0,1964:73.6,1965:72.6,1966:72.4,1967:72.2,1968:71.5,1969:70.9,1970:70.5,1971:69.4,1972:68.6,1973:67.8,1974:67.0,1975:66.0,1976:64.9,1977:64.0,1978:62.3,1979:61.6,1980:60.8,1981:59.8,1982:59.4,1983:59.5,1984:58.7,1985:58.0,1986:57.6,1987:57.6,1988:56.7,1989:56.1,1990:56.0,1991:55.3,1992:54.8,1993:55.1,1994:54.8,1995:54.4,1996:53.8,1997:53.1,1998:53.0,1999:52.7,2000:52.8,2001:52.3,2002:51.9,2003:51.5,2004:51.5,2005:51.2,2006:50.9,2007:50.8,2008:50.0,2009:50.5,2010:49.7,2011:48.9,2012:48.7,2013:48.3,2014:48.4,2015:48.2,2016:47.9,2017:48.2,2018:48.0,2019:48.2,2020:48.5,2021:47.4,2022:46.8,2023:47.3,2024:47.1,2025:46.6};
+const HH_ALONE = {1960:13.1,1961:13.3,1962:13.6,1963:13.6,1964:13.9,1965:15.0,1966:15.6,1967:15.5,1968:16.1,1969:16.7,1970:17.1,1971:17.7,1972:18.3,1973:18.5,1974:19.1,1975:19.6,1976:20.6,1977:20.9,1978:22.0,1979:22.2,1980:22.7,1981:23.0,1982:23.2,1983:22.9,1984:23.4,1985:23.7,1986:23.9,1987:23.6,1988:24.0,1989:24.5,1990:24.6,1991:25.0,1992:25.1,1993:24.4,1994:24.3,1995:25.0,1996:25.0,1997:25.1,1998:25.7,1999:25.6,2000:25.5,2001:26.1,2002:26.3,2003:26.4,2004:26.4,2005:26.6,2006:26.6,2007:26.8,2008:27.5,2009:27.0,2010:26.7,2011:27.5,2012:27.4,2013:27.4,2014:27.7,2015:28.0,2016:28.1,2017:27.9,2018:28.0,2019:28.4,2020:28.2,2021:28.2,2022:28.9,2023:29.0,2024:29.1,2025:29.5};
+const HH_SIZE = {1940:3.67,1947:3.56,1948:3.49,1949:3.42,1950:3.37,1951:3.34,1952:3.32,1953:3.28,1954:3.34,1955:3.33,1956:3.32,1957:3.33,1958:3.34,1959:3.34,1960:3.33,1961:3.36,1962:3.31,1963:3.33,1964:3.33,1965:3.31,1966:3.3,1967:3.28,1968:3.23,1969:3.19,1970:3.14,1971:3.11,1972:3.06,1973:3.01,1974:2.97,1975:2.94,1976:2.89,1977:2.86,1978:2.81,1979:2.78,1980:2.76,1981:2.73,1982:2.72,1983:2.73,1984:2.71,1985:2.69,1986:2.67,1987:2.66,1988:2.64,1989:2.62,1990:2.63,1991:2.63,1992:2.62,1993:2.66,1994:2.67,1995:2.65,1996:2.65,1997:2.64,1998:2.62,1999:2.61,2000:2.62,2001:2.58,2002:2.58,2003:2.57,2004:2.57,2005:2.57,2006:2.57,2007:2.56,2008:2.56,2009:2.57,2010:2.59,2011:2.56,2012:2.55,2013:2.54,2014:2.54,2015:2.54,2016:2.53,2017:2.54,2018:2.53,2019:2.52,2020:2.53,2021:2.54,2022:2.5,2023:2.51,2024:2.51,2025:2.5};
+const YA_M_1824 = {1960:52.4,1970:54.3,1980:54.3,1983:61.4,1984:61.7,1985:59.7,1986:58.8,1987:61.3,1988:60.7,1989:58.1,1990:58.1,1991:60.2,1992:60.4,1993:59.3,1994:59.5,1995:58.4,1996:59.0,1997:59.8,1998:58.6,1999:57.5,2000:57.1,2001:55.1,2002:55.3,2003:54.8,2004:56.5,2005:53.0,2006:53.7,2007:54.7,2008:56.1,2009:56.7,2010:57.3,2011:58.6,2012:60.5,2013:58.6,2014:58.2,2015:58.2,2016:59.1,2017:57.6,2018:57.8,2019:56.3,2020:60.1,2021:60.2,2022:56.7,2023:58.2,2024:58.3,2025:58.8};
+const YA_W_1824 = {1960:34.9,1970:41.3,1980:42.7,1983:47.6,1984:46.8,1985:47.8,1986:46.7,1987:47.5,1988:48.4,1989:47.0,1990:47.7,1991:48.8,1992:48.0,1993:46.9,1994:46.3,1995:46.7,1996:48.0,1997:48.2,1998:47.5,1999:49.0,2000:47.1,2001:45.4,2002:46.0,2003:45.7,2004:46.5,2005:46.0,2006:46.7,2007:47.6,2008:48.2,2009:48.9,2010:49.2,2011:50.3,2012:51.9,2013:52.0,2014:51.5,2015:51.8,2016:52.3,2017:51.9,2018:51.9,2019:52.8,2020:56.3,2021:55.4,2022:54.5,2023:54.6,2024:56.4,2025:56.4};
+const YA_M_2534 = {1960:10.9,1970:9.5,1980:10.5,1983:13.7,1984:13.2,1985:13.3,1986:14.2,1987:14.5,1988:15.0,1989:14.6,1990:15.0,1991:14.9,1992:15.3,1993:15.8,1994:15.6,1995:15.4,1996:16.0,1997:14.5,1998:14.6,1999:13.9,2000:12.9,2001:13.1,2002:13.6,2003:13.5,2004:13.9,2005:13.5,2006:14.3,2007:14.2,2008:15.1,2009:15.6,2010:16.4,2011:17.1,2012:16.9,2013:16.8,2014:17.7,2015:18.2,2016:19.6,2017:19.6,2018:20.8,2019:20.4,2020:22.0,2021:20.3,2022:18.7,2023:19.7,2024:18.7,2025:19.2};
+const YA_W_2534 = {1960:7.4,1970:6.6,1980:7.0,1983:7.6,1984:7.6,1985:8.0,1986:8.0,1987:7.7,1988:8.3,1989:7.9,1990:8.1,1991:8.7,1992:8.8,1993:8.8,1994:8.8,1995:8.5,1996:9.0,1997:8.6,1998:8.5,1999:8.6,2000:8.3,2001:8.1,2002:8.3,2003:7.0,2004:8.0,2005:8.1,2006:8.8,2007:9.3,2008:10.3,2009:9.9,2010:10.5,2011:9.7,2012:10.4,2013:11.1,2014:11.7,2015:12.1,2016:12.5,2017:12.5,2018:12.8,2019:13.1,2020:13.4,2021:13.2,2022:12.4,2023:12.3,2024:12.9,2025:13.6};
+// NCHS provisional rates per 1,000 total population. Divorce rates cover reporting states only.
+const MAR_RATE = {2000:8.2,2001:8.2,2002:8.0,2003:7.7,2004:7.8,2005:7.6,2006:7.5,2007:7.3,2008:7.1,2009:6.8,2010:6.8,2011:6.8,2012:6.8,2013:6.8,2014:6.9,2015:6.9,2016:7.0,2017:6.9,2018:6.5,2019:6.1,2020:5.1,2021:6.0,2022:6.2,2023:6.1,2024:6.3};
+const DIV_RATE = {2000:4.0,2001:4.0,2002:3.9,2003:3.8,2004:3.7,2005:3.6,2006:3.7,2007:3.6,2008:3.5,2009:3.5,2010:3.6,2011:3.6,2012:3.4,2013:3.3,2014:3.2,2015:3.1,2016:3.0,2017:2.9,2018:2.9,2019:2.7,2020:2.3,2021:2.5,2022:2.4,2023:2.4,2024:2.3};
+// NCHS: percent of all births to unmarried women. 1940-99 from NVSR 48(16); 2000-10 from NVSR 61(1) table C; later years from each year's "Births: Final Data" report.
+const NONMAR = {1940:3.8,1941:3.8,1942:3.4,1943:3.3,1944:3.8,1945:4.3,1946:3.8,1947:3.6,1948:3.7,1949:3.7,1950:4.0,1951:3.9,1952:3.9,1953:4.1,1954:4.4,1955:4.5,1956:4.7,1957:4.7,1958:5.0,1959:5.2,1960:5.3,1961:5.6,1962:5.9,1963:6.3,1964:6.9,1965:7.7,1966:8.4,1967:9.0,1968:9.7,1969:10.0,1970:10.7,1971:11.3,1972:12.4,1973:13.0,1974:13.2,1975:14.3,1976:14.8,1977:15.5,1978:16.3,1979:17.1,1980:18.4,1981:18.9,1982:19.4,1983:20.3,1984:21.0,1985:22.0,1986:23.4,1987:24.5,1988:25.7,1989:27.1,1990:28.0,1991:29.5,1992:30.1,1993:31.0,1994:32.6,1995:32.2,1996:32.4,1997:32.4,1998:32.8,1999:33.0,2000:33.2,2001:33.5,2002:34.0,2003:34.6,2004:35.8,2005:36.9,2006:38.5,2007:39.7,2008:40.6,2009:41.0,2010:40.8,2011:40.7,2012:40.7,2013:40.6,2014:40.2,2015:40.3,2016:39.8,2017:39.8,2018:39.6,2019:40.0,2020:40.5,2021:40.0,2022:39.8,2023:40.0,2024:39.5};
+/* DATA:END */
+
+const $ = id => document.getElementById(id);
+const years = o => Object.keys(o).map(Number).sort((a, b) => a - b);
+const last = o => { const y = years(o).pop(); return {y, v: o[y]}; };
+const lowest = o => { const m = Math.min(...Object.values(o)); return {v: m, ys: years(o).filter(y => o[y] === m)}; };
+const highest = o => { const m = Math.max(...Object.values(o)); return {v: m, ys: years(o).filter(y => o[y] === m)}; };
+const f1 = v => v.toFixed(1);
+const pct = v => f1(v) + "%";
+const list = a => a.length < 2 ? a.join("") : a.slice(0, -1).join(", ") + (a.length > 2 ? "," : "") + " and " + a[a.length - 1];
+// first year after `from` when the series is higher than its `from` value
+const passed = (o, from) => years(o).find(y => y > from && o[y] > o[from]);
+
+/* ---------- Guesses ---------- */
+let done = 0;
+const TOTAL = 5;
+function showAll() { document.querySelectorAll(".after").forEach(e => e.classList.remove("hidden")); $("gate").classList.add("hidden"); }
+function answered() { if (++done >= TOTAL) showAll(); }
+function choose(groupId, ansId, correct, text) {
+  const btns = document.querySelectorAll(`#${groupId} button`);
+  btns.forEach(b => b.addEventListener("click", () => {
+    btns.forEach(x => { x.setAttribute("aria-pressed", x === b); x.disabled = true; });
+    $(ansId).innerHTML = (b.dataset.v === correct ? "<strong>Right.</strong> " : "<strong>Not quite.</strong> ") + text;
+    $(ansId).classList.remove("hidden"); answered();
+  }));
+}
+function slide(n, unit, text) {
+  $("s" + n).addEventListener("input", e => $("v" + n).textContent = e.target.value + unit);
+  $("b" + n).addEventListener("click", () => {
+    $("s" + n).disabled = true; $("b" + n).disabled = true;
+    $("a" + n).innerHTML = text(+$("s" + n).value);
+    $("a" + n).classList.remove("hidden"); answered();
+  });
+}
+const mLow = lowest(AGE_M), mNow = last(AGE_M), wNow = last(AGE_W);
+slide(1, "", g => `<strong>${f1(AGE_M[1890])}.</strong> You guessed ${g}. Men in 1890 married later than men in the 1950s, when the typical age fell to <strong>${f1(mLow.v)}</strong>. It didn’t climb back above its 1890 level until ${passed(AGE_M, 1890)}. In ${mNow.y} it was <strong>${f1(mNow.v)}</strong>.`);
+const dNow = last(DIV_RATE);
+choose("c2", "a2", "down", `The divorce rate fell from <strong>${f1(DIV_RATE[2000])}</strong> divorces per 1,000 people in 2000 to <strong>${f1(dNow.v)}</strong> in ${dNow.y}. The marriage rate fell too, from ${f1(MAR_RATE[2000])} to ${f1(last(MAR_RATE).v)} per 1,000.`);
+const kNow = last(KID_TWO);
+slide(3, "%", g => `<strong>${pct(kNow.v)}</strong> in ${kNow.y}. You guessed ${g}%. That’s down from <strong>${pct(KID_TWO[1960])}</strong> in 1960, but it has changed little since the mid-1990s. “Two parents” includes stepparents and adoptive parents, and parents who aren’t married to each other.`);
+const aNow = last(HH_ALONE);
+slide(4, "%", g => `<strong>${pct(aNow.v)}</strong> in ${aNow.y}. You guessed ${g}%. In 1960 it was <strong>${pct(HH_ALONE[1960])}</strong>. People living alone include young adults, people who are divorced, and many older people who have outlived a spouse.`);
+const nHigh = highest(NONMAR), nNow = last(NONMAR);
+choose("c5", "a5", "flat", `The share rose from <strong>${pct(NONMAR[1960])}</strong> of births in 1960 to a peak of <strong>${pct(nHigh.v)}</strong> in ${nHigh.ys[0]}. Since then it has stayed between ${pct(Math.min(...years(NONMAR).filter(y => y > nHigh.ys[0]).map(y => NONMAR[y])))} and ${pct(nHigh.v)}. In ${nNow.y} it was <strong>${pct(nNow.v)}</strong>.`);
+
+/* ---------- Trends ---------- */
+const CENSUS = "U.S. Census Bureau";
+const TRENDS = [
+  {id: "marry", btn: "Age at marriage", title: "Median age at first marriage", sub: "Half of people marrying for the first time were younger than this age, and half were older.",
+    series: [{name: "Men", d: AGE_M}, {name: "Women", d: AGE_W}], min: 18, max: 32, ticks: [18, 20, 22, 24, 26, 28, 30, 32], fmt: f1, unit: "years", start: 1956,
+    notice: () => `The 1950s were the exception, not the starting point. Men married youngest in ${list(mLow.ys)} (${f1(mLow.v)}) and women in ${list(lowest(AGE_W).ys)} (${f1(lowest(AGE_W).v)}). In 1890, the ages were ${f1(AGE_M[1890])} and ${f1(AGE_W[1890])}.`,
+    caveat: "1890–1940 figures come from the census, taken every 10 years. Starting in 2019, the estimates include same-sex married couples. The vertical axis starts at 18, not 0."},
+  {id: "kids", btn: "Children", title: "Who children live with", sub: "Percent of children under 18.",
+    series: [{name: "Two parents", d: KID_TWO}, {name: "Mother only", d: KID_MOM}, {name: "Father only", d: KID_DAD}, {name: "No parent", d: KID_NONE}], min: 0, max: 100, ticks: [0, 25, 50, 75, 100], fmt: pct, unit: "", start: 1960,
+    notice: () => `Most of the change happened between 1960 and the mid-1990s. The share living with two parents was ${pct(KID_TWO[1995])} in 1995 and ${pct(kNow.v)} in ${kNow.y}. The share living with only their mother peaked at ${pct(highest(KID_MOM).v)} in ${highest(KID_MOM).ys[0]}.`,
+    caveat: "“Two parents” includes biological, step, and adoptive parents. Starting in 2007, the survey could identify two parents who live together but aren’t married, which raised the two-parent share by about 3 points that year. No figures were published for 1961–1967."},
+  {id: "house", btn: "Households", title: "Married couples and people living alone", sub: "Percent of all households.",
+    series: [{name: "Married couple", d: HH_MARRIED}, {name: "One person", d: HH_ALONE}], min: 0, max: 100, ticks: [0, 25, 50, 75, 100], fmt: pct, unit: "", start: 1960,
+    notice: () => `Married couples headed ${pct(highest(HH_MARRIED).v)} of households in ${highest(HH_MARRIED).ys[0]} and ${pct(last(HH_MARRIED).v)} in ${last(HH_MARRIED).y}. Over the same years, living alone went from uncommon to more than one in four households.`,
+    caveat: "A household is everyone who lives in one housing unit. Married-couple households may or may not include children. The one-person series starts in 1960."},
+  {id: "size", btn: "Household size", title: "Average household size", sub: "Average number of people per household.",
+    series: [{name: "People per household", d: HH_SIZE}], min: 0, max: 4, ticks: [0, 1, 2, 3, 4], fmt: v => v.toFixed(2), unit: "", start: 1960,
+    notice: () => `The average household had ${HH_SIZE[1940].toFixed(2)} people in 1940 and ${last(HH_SIZE).v.toFixed(2)} in ${last(HH_SIZE).y}. Most of the drop came before 1990. Fewer children per family, more people living alone, and longer lives after children leave home all play a part.`,
+    caveat: "The 1940 figure comes from the census."},
+  {id: "births", btn: "Births", title: "Births to unmarried women", sub: "Percent of all births.",
+    series: [{name: "Births to unmarried women", d: NONMAR}], min: 0, max: 50, ticks: [0, 10, 20, 30, 40, 50], fmt: pct, unit: "", start: 2009,
+    notice: () => `After rising for almost 70 years, the share peaked at ${pct(nHigh.v)} in ${nHigh.ys[0]} and has been close to 40% ever since.`,
+    caveat: "“Unmarried” describes the mother’s legal marital status when the baby was born. Many unmarried mothers live with the baby’s other parent, which these numbers don’t show."},
+  {id: "divorce", btn: "Divorce", title: "Marriage and divorce rates", sub: "Marriages and divorces per 1,000 people.",
+    series: [{name: "Marriages", d: MAR_RATE}, {name: "Divorces", d: DIV_RATE}], min: 0, max: 10, ticks: [0, 2, 4, 6, 8, 10], fmt: f1, unit: "", start: 2000,
+    notice: () => `Both rates fell. The marriage rate dropped sharply in 2020, the first year of the COVID-19 pandemic, and then partly recovered.`,
+    caveat: "These rates are per 1,000 people of all ages, so they also shift when the population gets older or younger. Divorce figures leave out several states that don’t report them, including California."},
+  {id: "home", btn: "Young adults", title: "Young adults living with a parent", sub: "Percent of each group living in a parent’s home.",
+    series: [{name: "Men 18–24", d: YA_M_1824}, {name: "Women 18–24", d: YA_W_1824}, {name: "Men 25–34", d: YA_M_2534}, {name: "Women 25–34", d: YA_W_2534}], min: 0, max: 100, ticks: [0, 25, 50, 75, 100], fmt: pct, unit: "", start: 1960,
+    notice: () => `Living with parents isn’t new for 18-to-24-year-olds: a majority of men that age did so in 1960, too. The biggest change is among women ages 18–24, from ${pct(YA_W_1824[1960])} in 1960 to ${pct(last(YA_W_1824).v)} in ${last(YA_W_1824).y}, as women married later.`,
+    caveat: "Unmarried college students living in dorms are counted as living in their parents’ home, so rising college enrollment raises these numbers. The 1960, 1970, and 1980 figures come from the census; yearly figures start in 1983."}
+];
+const COLORS = ["var(--s1)", "var(--s2)", "var(--s3)", "var(--s4)"];
+const DASH = ["", "", "7 4", "2 4"];   // a second cue besides color when there are 3 or 4 lines
+
+// On narrow screens the chart is drawn smaller so its text stays readable, and the legend replaces the end-of-line labels.
+let W, L, R, PH, H, NARROW;
+const TOP = 14;
+function sizeChart() {
+  NARROW = window.innerWidth < 600;
+  W = NARROW ? 430 : 660; L = NARROW ? 46 : 52; R = NARROW ? 16 : 138; PH = NARROW ? 250 : 300; H = TOP + PH + 34;
+}
+sizeChart();
+let T = null, X0 = 0, X1 = 0, allYears = [];
+const x = y => L + (y - X0) * (W - L - R) / (X1 - X0);
+const yy = v => TOP + PH - (v - T.min) / (T.max - T.min) * PH;
+
+function linePath(d) {
+  return years(d).map((y, i) => (i ? "L" : "M") + x(y).toFixed(1) + " " + yy(d[y]).toFixed(1)).join(" ");
+}
+function loneDots(d, color) {
+  // dots only where a year has no neighbor on at least one side (census years, gaps)
+  const ys = years(d);
+  return ys.filter((y, i) => (i === 0 || y - ys[i - 1] > 1) || (i < ys.length - 1 && ys[i + 1] - y > 1))
+    .map(y => `<circle cx="${x(y).toFixed(1)}" cy="${yy(d[y]).toFixed(1)}" r="3.4" fill="${color}" stroke="var(--surface)" stroke-width="1.5"/>`).join("");
+}
+function endLabels() {
+  // direct labels at the right end, nudged apart so they don't overlap
+  const items = T.series.map((s, i) => ({i, name: s.name, y: yy(last(s.d).v)})).sort((a, b) => a.y - b.y);
+  const GAP = 19;
+  for (let k = 1; k < items.length; k++) if (items[k].y - items[k - 1].y < GAP) items[k].y = items[k - 1].y + GAP;
+  const over = items.length ? items[items.length - 1].y - (TOP + PH + 4) : 0;
+  if (over > 0) { items.forEach(it => it.y -= over); for (let k = items.length - 2; k >= 0; k--) if (items[k + 1].y - items[k].y < GAP) items[k].y = items[k + 1].y - GAP; }
+  return items.map(it => `<text class="end" x="${x(X1) + 10}" y="${(it.y + 5).toFixed(1)}">${it.name}</text>`).join("");
+}
+function describe() {
+  return T.title + ", " + X0 + " to " + X1 + ". " + T.series.map(s => { const ys = years(s.d), a = ys[0], b = last(s.d); return `${s.name}: ${T.fmt(s.d[a])} in ${a}, ${T.fmt(b.v)} in ${b.y}.`; }).join(" ");
+}
+function drawChart() {
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${describe().replace(/"/g, "&quot;")}">`;
+  T.ticks.forEach(v => s += `<line x1="${L}" x2="${x(X1)}" y1="${yy(v)}" y2="${yy(v)}" stroke="var(--line)"/><text x="${L - 8}" y="${yy(v) + 5}" text-anchor="end">${v}${T.fmt === pct ? "%" : ""}</text>`);
+  const span = X1 - X0, stepT = span > 80 ? 20 : span > 40 ? 10 : 5;
+  for (let y = Math.ceil(X0 / stepT) * stepT; y <= X1 - span * (NARROW ? .14 : .09); y += stepT) s += `<text x="${x(y)}" y="${H - 8}" text-anchor="middle">${y}</text>`;
+  s += `<text x="${NARROW ? W - 2 : x(X1)}" y="${H - 8}" text-anchor="${NARROW ? "end" : "middle"}">${X1}</text>`;
+  T.series.forEach((se, i) => {
+    s += `<path d="${linePath(se.d)}" fill="none" stroke="${COLORS[i]}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"${T.series.length > 2 && DASH[i] ? ` stroke-dasharray="${DASH[i]}"` : ""}/>` + loneDots(se.d, COLORS[i]);
+  });
+  if (!NARROW) s += endLabels();
+  s += `<line id="cursor" x1="0" x2="0" y1="${TOP}" y2="${TOP + PH}" stroke="var(--ink)" stroke-width="1.2" opacity=".55"/><g id="markers"></g>`;
+  s += `<rect x="${L}" y="${TOP}" width="${x(X1) - L}" height="${PH}" fill="transparent"/></svg>`;
+  $("chart").innerHTML = s;
+  const svg = $("chart").querySelector("svg");
+  const pick = ev => {
+    const pt = svg.createSVGPoint(); pt.x = ev.clientX; pt.y = ev.clientY;
+    const p = pt.matrixTransform(svg.getScreenCTM().inverse());
+    setYear(X0 + (p.x - L) / (W - L - R) * (X1 - X0));
+  };
+  svg.addEventListener("pointermove", pick);
+  svg.addEventListener("pointerdown", pick);
+}
+function setYear(target) {
+  // snap to the nearest year that has data
+  const y = allYears.reduce((best, c) => Math.abs(c - target) < Math.abs(best - target) ? c : best, allYears[0]);
+  $("yr").value = y;
+  const c = $("cursor"); c.setAttribute("x1", x(y)); c.setAttribute("x2", x(y));
+  $("markers").innerHTML = T.series.map((s, i) => s.d[y] == null ? "" : `<circle cx="${x(y)}" cy="${yy(s.d[y])}" r="5.5" fill="${COLORS[i]}" stroke="var(--surface)" stroke-width="2"/>`).join("");
+  $("readout").innerHTML = `<div><div class="num">${y}</div><div class="cap">Year</div></div>` +
+    T.series.map((s, i) => `<div><div class="num"${s.d[y] == null ? ' style="color:var(--muted)"' : ""}>${s.d[y] == null ? "—" : T.fmt(s.d[y])}</div><div class="cap"><span class="sw" style="background:${COLORS[i]}"></span>${s.name}</div></div>`).join("");
+}
+function drawTable() {
+  let t = "<thead><tr><th>Year</th>" + T.series.map(s => `<th>${s.name}</th>`).join("") + "</tr></thead><tbody>";
+  allYears.forEach(y => t += `<tr><td>${y}</td>` + T.series.map(s => `<td>${s.d[y] == null ? "—" : T.fmt(s.d[y])}</td>`).join("") + "</tr>");
+  $("tbl").innerHTML = t + "</tbody>";
+}
+function legendLine(i, n) {
+  return `<svg width="26" height="10"><line x1="1" y1="5" x2="25" y2="5" stroke="${COLORS[i]}" stroke-width="3" stroke-linecap="round"${n > 2 && DASH[i] ? ` stroke-dasharray="${DASH[i]}"` : ""}/></svg>`;
+}
+function showTrend(id) {
+  T = TRENDS.find(t => t.id === id);
+  allYears = [...new Set(T.series.flatMap(s => years(s.d)))].sort((a, b) => a - b);
+  X0 = allYears[0]; X1 = allYears[allYears.length - 1];
+  document.querySelectorAll("#trends button").forEach(b => b.setAttribute("aria-pressed", b.dataset.id === id));
+  $("tTitle").textContent = T.title; $("tSub").textContent = T.sub;
+  $("legend").innerHTML = T.series.length > 1 || NARROW ? T.series.map((s, i) => `<span>${legendLine(i, T.series.length)}${s.name}</span>`).join("") : "";
+  $("tNotice").innerHTML = "<strong>What to notice:</strong> " + T.notice();
+  $("tCaveat").textContent = "Keep in mind: " + T.caveat;
+  $("yr").min = X0; $("yr").max = X1;
+  drawChart(); drawTable(); setYear(T.start);
+}
+$("trends").innerHTML = TRENDS.map(t => `<button data-id="${t.id}" aria-pressed="false">${t.btn}</button>`).join("");
+$("trends").addEventListener("click", e => { const b = e.target.closest("button"); if (b) showTrend(b.dataset.id); });
+$("yr").addEventListener("input", e => setYear(+e.target.value));
+window.addEventListener("resize", () => { const was = NARROW; sizeChart(); if (was !== NARROW) { const y = +$("yr").value; showTrend(T.id); setYear(y); } });
+
+/* ---------- 1960 and now ---------- */
+const TN = [
+  ["Median age at first marriage, men", AGE_M, f1], ["Median age at first marriage, women", AGE_W, f1],
+  ["Children living with two parents", KID_TWO, pct], ["Children living with their mother only", KID_MOM, pct],
+  ["Children living with their father only", KID_DAD, pct],
+  ["Households headed by a married couple", HH_MARRIED, pct], ["Households of one person", HH_ALONE, pct],
+  ["Average people per household", HH_SIZE, v => v.toFixed(2)], ["Births to unmarried women", NONMAR, pct],
+  ["Men 18–24 living with a parent", YA_M_1824, pct], ["Women 18–24 living with a parent", YA_W_1824, pct]
+];
+$("thenNow").innerHTML = "<thead><tr><th>Measure</th><th>1960</th><th>Latest</th><th>Year</th></tr></thead><tbody>" +
+  TN.map(([n, d, f]) => `<tr><td>${n}</td><td>${f(d[1960])}</td><td>${f(last(d).v)}</td><td>${last(d).y}</td></tr>`).join("") + "</tbody>";
+
+/* ---------- The fuller picture (numbers come from the data, so they stay right after updates) ---------- */
+$("p1").innerHTML = `<strong>The 1950s were unusual.</strong> People married younger in the 1950s than at any other time in these records. In 1890, the typical man married at ${f1(AGE_M[1890])} and the typical woman at ${f1(AGE_W[1890])}. Men’s age at first marriage didn’t pass its 1890 level until ${passed(AGE_M, 1890)}, and women’s didn’t until ${passed(AGE_W, 1890)}. If you compare today’s families only with the 1950s, every change looks bigger than it does over the longer run.`;
+$("p2").innerHTML = `<strong>Several trends have slowed or stopped.</strong> The share of births to unmarried women hasn’t topped its ${nHigh.ys[0]} peak. The share of children living with two parents was ${pct(KID_TWO[2007])} in 2007 and ${pct(kNow.v)} in ${kNow.y}. The divorce rate fell from ${f1(DIV_RATE[2000])} per 1,000 people in 2000 to ${f1(dNow.v)} in ${dNow.y}.`;
+$("p3").innerHTML = `<strong>Other trends are still moving.</strong> The age at first marriage keeps rising, married couples now head fewer than half of households (${pct(last(HH_MARRIED).v)}), and the share of households with one person (${pct(aNow.v)}) is the highest on record.`;
+
+showTrend("marry");
+$("skip").addEventListener("click", showAll);
+if (location.hash === "#charts") showAll();
+</script>
+</body>
+</html>
