@@ -118,6 +118,9 @@ summary:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 .card { min-width: 0; }
 .hidden { display: none !important; }
 @media (max-width: 560px) { .card { padding: 1.1rem; } .brow { grid-template-columns: 1fr; gap: .2rem; } }
+
+/* Main landmark for screen readers; keeps the same spacing as before. */
+.wrap-main { display: grid; gap: inherit; min-width: 0; }
 </style>
 </head>
 <body>
@@ -127,6 +130,7 @@ summary:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
     <h1>Then and Now: The American Family</h1>
     <p class="lede">People often talk about how much families have changed, but how much, and in which direction? For each question, you’ll see where things stood about 50 years ago. Guess where they stand now, then check your guess against federal statistics and national surveys.</p>
   </header>
+  <main class="wrap-main">
 
   <section class="card" id="quiz" aria-live="polite">
     <div class="meta"><span id="counter"></span><button class="linkish" id="skip">Skip to all the answers</button></div>
@@ -221,6 +225,7 @@ summary:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
     <p>Spot an error? <a href="https://github.com/gsharpokie/familytrends/issues/new">Suggest a correction</a> (needs a free GitHub account).</p>
   </section>
 
+  </main>
   <footer>Created by Gwen Sharp (<a href="https://x.com/gsharpokie">@gsharpokie</a>). Licensed under <a href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC 4.0</a>.</footer>
 </div>
 
